@@ -12,8 +12,14 @@ option(BUILD_EXAMPLES "Build examples." ON)
 
 find_package(Threads REQUIRED)
 find_package(Casablanca REQUIRED)
-find_package(OpenSSL 1.0.0 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system thread)
+
+if(APPLE AND NOT OPENSSL_ROOT_DIR)
+  file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/*)
+  list(REVERSE OPENSSL_ROOT_DIR)
+endif()
+  set(_OPENSSL_VERSION "")
+find_package(OpenSSL 1.0.0 REQUIRED)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message("-- Setting clang options")
