@@ -10,7 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-option(BUILD_EXAMPLES "Build examples." ON)
+option(BUILD_TESTS "Build tests." ON)
 
 find_package(Threads REQUIRED)
 find_package(Casablanca REQUIRED)
@@ -39,6 +39,6 @@ endif()
 
 add_subdirectory(src)
 
-if(BUILD_EXAMPLES)
-  add_subdirectory(examples)
+if(BUILD_TESTS)
+  add_subdirectory(tests)
 endif()

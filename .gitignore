@@ -28,9 +28,7 @@
 *.app
 
 # Build dir
-build/
-build_debug/
-build_release/
+build*/
 
 # Kdevelop4
 .kdev4/
