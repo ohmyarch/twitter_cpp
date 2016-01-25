@@ -1,1 +1,0 @@
-*.h *.cc : clang-format -i $TMPFILE

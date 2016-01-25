@@ -29,9 +29,14 @@
 
 # Build dir
 build/
+build_debug/
+build_release/
 
 # Kdevelop4
 .kdev4/
 
 # Dolphin
 .directory
+
+# Qt Creator
+CMakeLists.txt.user
