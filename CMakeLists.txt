@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(TWITTER_CPP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -27,9 +29,9 @@ include_directories(${OPENSSL_INCLUDE_DIR})
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message("-- Setting clang options")
-  
+
   set(WARNINGS "${WARNINGS} ${OSX_SUPPRESSIONS}")
-  
+
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wno-return-type-c-linkage -Wno-unneeded-internal-declaration")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++14")

@@ -1,4 +1,4 @@
-include_directories(${CASABLANCA_INCLUDE_DIRS})
+include_directories(${TWITTER_CPP_INCLUDE_DIR})
 
 add_executable(twitter_cpp_test twitter_cpp_tests.cc)
 
