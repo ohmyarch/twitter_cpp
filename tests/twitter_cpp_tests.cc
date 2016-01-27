@@ -37,7 +37,7 @@
 
 #include <string>
 #include <iostream>
-#include <twitter/twitter.h>
+#include "twitter/twitter.h"
 
 #ifdef _WIN32
 int wmain(int argc, wchar_t *argv[])
@@ -47,4 +47,6 @@ int main(int argc, char *argv[])
 {
     std::string username;
     std::string password;
+
+    std::cout << test_call() << std::endl;
 }

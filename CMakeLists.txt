@@ -6,13 +6,14 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
-#set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(TWITTER_CPP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 option(BUILD_TESTS "Build tests." ON)
+option(BUILD_SHARED_LIBS "Build shared Libraries." ON)
+
+if(WIN32)
+  option(Boost_USE_STATIC_LIBS ON)
+endif()
 
 find_package(Threads REQUIRED)
 find_package(Casablanca REQUIRED)
@@ -38,6 +39,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fno-strict-aliasing")
 endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+set(TWITTER_CPP_LIBRARY ${LIB}twitter)
 
 add_subdirectory(src)
 
