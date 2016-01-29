@@ -46,6 +46,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 set(TWITTER_CPP_LIBRARY ${LIB}twitter)
 
+include_directories(${CMAKE_SOURCE_DIR})
+
 add_subdirectory(src)
 
 if(BUILD_TESTS)

@@ -1,5 +1,3 @@
-include_directories(..)
-
 add_executable(twitter_cpp_test twitter_cpp_tests.cc)
 
 target_link_libraries(twitter_cpp_test

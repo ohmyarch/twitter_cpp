@@ -1,5 +1,3 @@
-include_directories(..)
-
 set(SOURCES
   twitter.cc
 )
