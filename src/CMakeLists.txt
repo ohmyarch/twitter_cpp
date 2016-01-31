@@ -1,5 +1,6 @@
 set(SOURCES
-  twitter.cc
+  client.cc
+  utility.cc
 )
 
 add_library(${TWITTER_CPP_LIBRARY} ${SOURCES})

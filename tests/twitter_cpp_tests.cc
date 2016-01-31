@@ -35,9 +35,14 @@
 **
 ****************************************************************************/
 
-#include <string>
+#include "twitter/client.h"
+#include "twitter/utility.h"
 #include <iostream>
-#include "twitter/twitter.h"
+#include <string>
+
+static const std::string consumer_key("0eDcIJLNpeeSosBdvNQk5cq3u");
+static const std::string
+    consumer_secret("zltRuNwj1twFxKBMb22Kz8DSRqgW9W3lxCO9EstlqDCysJc6le");
 
 #ifdef _WIN32
 int wmain(int argc, wchar_t *argv[])
@@ -45,8 +50,6 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    std::string username;
-    std::string password;
-
-    std::cout << test_call() << std::endl;
+    twitter::twitter_client client(consumer_key, consumer_secret);
+    client.do_authorization();
 }
