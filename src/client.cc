@@ -36,10 +36,10 @@ twitter_client::twitter_client(const string_t &consumer_key,
           u("https://api.twitter.com/oauth/request_token"),
           u("https://api.twitter.com/oauth/authorize"),
           u("https://api.twitter.com/oauth/access_token"),
-          u("http://testhost.local:8890/"),
+          u("http://127.0.0.1:4000"),
           web::http::oauth1::experimental::oauth1_methods::hmac_sha1) {
-        // http_client_config_.set_proxy(web::web_proxy(u("socks5://127.0.0.1:1080")));
-        }
+    // http_client_config_.set_proxy(web::web_proxy(u("socks5://127.0.0.1:1080")));
+}
 
 bool twitter_client::open_browser_auth() {
     if (!oauth1_config_.token().is_valid_access_token()) {
@@ -48,6 +48,9 @@ bool twitter_client::open_browser_auth() {
             string_t auth_uri = auth_uri_task.get();
             ucout << auth_uri << std::endl;
         } catch (const web::http::oauth1::experimental::oauth1_exception &e) {
+            std::cout << "Error: " << e.what() << std::endl;
+
+            return false;
         }
 
         if (true) {
