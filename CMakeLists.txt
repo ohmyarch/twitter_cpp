@@ -26,7 +26,7 @@ endif()
 set(_OPENSSL_VERSION "")
 find_package(OpenSSL 1.0.0 REQUIRED)
 
-include_directories(${OPENSSL_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR} ${OPENSSL_INCLUDE_DIR} ${CASABLANCA_INCLUDE_DIRS})
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   message("-- Setting clang options")
@@ -45,8 +45,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 set(TWITTER_CPP_LIBRARY ${LIB}twitter)
-
-include_directories(${CMAKE_SOURCE_DIR})
 
 add_subdirectory(src)
 
