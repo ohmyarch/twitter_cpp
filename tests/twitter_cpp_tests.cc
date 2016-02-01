@@ -71,5 +71,5 @@ int main(int argc, char *argv[])
 #endif
 {
     twitter::twitter_client client(consumer_key, consumer_secret);
-    // client.do_authorization();
+    client.open_browser_auth();
 }

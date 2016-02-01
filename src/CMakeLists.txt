@@ -1,3 +1,5 @@
+include_directories(${CASABLANCA_INCLUDE_DIRS})
+
 set(SOURCES
   client.cc
   utility.cc
