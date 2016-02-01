@@ -37,12 +37,32 @@
 
 #include "twitter/client.h"
 #include "twitter/utility.h"
-#include <iostream>
-#include <string>
 
-static const std::string consumer_key("0eDcIJLNpeeSosBdvNQk5cq3u");
-static const std::string
-    consumer_secret("zltRuNwj1twFxKBMb22Kz8DSRqgW9W3lxCO9EstlqDCysJc6le");
+static const twitter::string_t consumer_key(u("0eDcIJLNpeeSosBdvNQk5cq3u"));
+static const twitter::string_t
+    consumer_secret(u("zltRuNwj1twFxKBMb22Kz8DSRqgW9W3lxCO9EstlqDCysJc6le"));
+
+static bool open_browser(const twitter::string_t &uri) {
+#if defined(_WIN32) && !defined(__cplusplus_winrt)
+    // NOTE: Windows desktop only.
+    auto r = ShellExecuteA(NULL, "open", twitter::utf16_to_utf8(uri), NULL,
+                           NULL, SW_SHOWNORMAL);
+
+    return true;
+#elif defined(__APPLE__)
+    // NOTE: OS X only.
+    std::string browser_cmd("open \"" + uri + "\"");
+    std::system(browser_cmd.c_str());
+
+    return true;
+#else
+    // NOTE: Linux/X11 only.
+    std::string browser_cmd("xdg-open \"" + uri + "\"");
+    std::system(browser_cmd.c_str());
+
+    return true;
+#endif
+}
 
 #ifdef _WIN32
 int wmain(int argc, wchar_t *argv[])
@@ -51,5 +71,5 @@ int main(int argc, char *argv[])
 #endif
 {
     twitter::twitter_client client(consumer_key, consumer_secret);
-    client.do_authorization();
+    // client.do_authorization();
 }
