@@ -37,10 +37,13 @@
 
 #include "twitter/client.h"
 #include "twitter/utility.h"
+#include <fstream>
 
 static const twitter::string_t consumer_key(u("0eDcIJLNpeeSosBdvNQk5cq3u"));
 static const twitter::string_t
     consumer_secret(u("zltRuNwj1twFxKBMb22Kz8DSRqgW9W3lxCO9EstlqDCysJc6le"));
+static const twitter::string_t callback_uri(u("http://127.0.0.1:8890/"));
+static const twitter::string_t proxy_uri(u("http://localhost:8118/"));
 
 static bool open_browser(const twitter::string_t &uri) {
 #if defined(_WIN32) && !defined(__cplusplus_winrt)
@@ -70,6 +73,36 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    twitter::twitter_client client(consumer_key, consumer_secret);
-    client.open_browser_auth();
+    twitter::twitter_client client(consumer_key, consumer_secret, u("oob"));
+    client.set_proxy(proxy_uri);
+
+    twitter::string_t &&auth_uri = client.build_authorization_uri();
+
+    if (auth_uri.empty())
+        return 0;
+
+    open_browser(auth_uri);
+
+    std::cout << "Enter the PIN provided by twitter: ";
+
+    twitter::string_t pin;
+    ucin >> pin;
+
+    if (!client.token_from_pin(pin)) {
+        std::cout << "Authorization failed." << std::endl;
+
+        return 0;
+    }
+
+    std::cout << "Requesting account information:" << std::endl;
+
+    ucout << client.get_account_settings() << std::endl;
+
+    twitter::token token = client.token();
+
+    twitter::ofstream_t access_token("access_token");
+    twitter::ofstream_t access_token_secret("access_token_secret");
+
+    access_token << token.access_token();
+    access_token_secret << token.secret();
 }

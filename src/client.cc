@@ -26,42 +26,66 @@
 **
 ****************************************************************************/
 
+#include "cpprest/http_listener.h"
 #include "twitter/client.h"
 
 namespace twitter {
 twitter_client::twitter_client(const string_t &consumer_key,
-                               const string_t &consumer_secret)
+                               const string_t &consumer_secret,
+                               const string_t &callback_uri)
     : oauth1_config_(
           consumer_key, consumer_secret,
           u("https://api.twitter.com/oauth/request_token"),
           u("https://api.twitter.com/oauth/authorize"),
-          u("https://api.twitter.com/oauth/access_token"),
-          u("http://127.0.0.1:4000"),
-          web::http::oauth1::experimental::oauth1_methods::hmac_sha1) {
-    // http_client_config_.set_proxy(web::web_proxy(u("socks5://127.0.0.1:1080")));
+          u("https://api.twitter.com/oauth/access_token"), callback_uri,
+          web::http::oauth1::experimental::oauth1_methods::hmac_sha1) {}
+
+void twitter_client::listen_for_code() {
+    auto listener =
+        std::make_unique<web::http::experimental::listener::http_listener>(
+            web::http::uri(oauth1_config_.callback_uri()));
+    listener->support([this](web::http::http_request request) {
+        string_t s = request.request_uri().path();
+        string_t ss = request.request_uri().query();
+    });
+    listener->open().wait();
 }
 
-bool twitter_client::open_browser_auth() {
-    if (!oauth1_config_.token().is_valid_access_token()) {
-        auto auth_uri_task(oauth1_config_.build_authorization_uri());
-        try {
-            string_t auth_uri = auth_uri_task.get();
-            ucout << auth_uri << std::endl;
-        } catch (const web::http::oauth1::experimental::oauth1_exception &e) {
-            std::cout << "Error: " << e.what() << std::endl;
+string_t twitter_client::build_authorization_uri() {
+    auto auth_uri_task = oauth1_config_.build_authorization_uri();
+    try {
+        string_t auth_uri = auth_uri_task.get();
 
-            return false;
-        }
+        return auth_uri;
+    } catch (const web::http::oauth1::experimental::oauth1_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
 
-        if (true) {
-            http_client_config_.set_oauth1(oauth1_config_);
+        return string_t();
+    }
+}
 
-            return true;
-        } else {
-            return false;
-        }
-    } else {
+bool twitter_client::token_from_pin(const string_t &pin) {
+    auto token_task = oauth1_config_.token_from_verifier(pin);
+    try {
+        token_task.get();
+    } catch (const web::http::oauth1::experimental::oauth1_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+
         return false;
     }
+
+    http_client_config_.set_oauth1(oauth1_config_);
+
+    return true;
+}
+
+string_t twitter_client::get_account_settings() const {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    return api.request(web::http::methods::GET, u("account/settings.json"))
+        .get()
+        .extract_string()
+        .get();
 }
 }
