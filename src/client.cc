@@ -26,8 +26,9 @@
 **
 ****************************************************************************/
 
-#include "cpprest/http_listener.h"
 #include "twitter/client.h"
+#include <cpprest/http_listener.h>
+#include <cpprest/json.h>
 
 namespace twitter {
 twitter_client::twitter_client(const string_t &consumer_key,
@@ -79,11 +80,86 @@ bool twitter_client::token_from_pin(const string_t &pin) {
     return true;
 }
 
-string_t twitter_client::get_account_settings() const {
+account_settings twitter_client::get_account_settings() const {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
-    return api.request(web::http::methods::GET, u("account/settings.json"))
+    web::json::object root =
+        api.request(web::http::methods::GET, u("account/settings.json"))
+            .get()
+            .extract_json()
+            .get()
+            .as_object();
+
+    account_settings settings;
+
+    try {
+        auto time_zone = root.at(u("time_zone")).as_object();
+        string_t name = time_zone[u("name")].as_string();
+        int utc_offset = time_zone[u("utc_offset")].as_integer();
+        string_t tzinfo_name = time_zone[u("tzinfo_name")].as_string();
+
+        settings.set_time_zone(
+            twitter::time_zone(name, utc_offset, tzinfo_name));
+
+        bool is_protected = root.at(u("protected")).as_bool();
+        settings.set_protected(is_protected);
+
+        string_t screen_name = root.at(u("screen_name")).as_string();
+        settings.set_screen_name(screen_name);
+
+        bool is_always_use_https = root.at(u("always_use_https")).as_bool();
+        settings.set_always_use_https(is_always_use_https);
+
+        bool is_use_cookie_personalization =
+            root.at(u("use_cookie_personalization")).as_bool();
+        settings.set_use_cookie_personalization(is_use_cookie_personalization);
+
+        bool is_geo_enabled = root.at(u("geo_enabled")).as_bool();
+        settings.set_geo_enabled(is_geo_enabled);
+
+        bool is_discoverable_by_email =
+            root.at(u("discoverable_by_email")).as_bool();
+        settings.set_discoverable_by_email(is_discoverable_by_email);
+
+        bool is_discoverable_by_mobile_phone =
+            root.at(u("discoverable_by_mobile_phone")).as_bool();
+        settings.set_discoverable_by_mobile_phone(
+            is_discoverable_by_mobile_phone);
+
+        bool is_display_sensitive_media =
+            root.at(u("display_sensitive_media")).as_bool();
+        settings.set_display_sensitive_media(is_display_sensitive_media);
+
+        bool is_smart_mute = root.at(u("smart_mute")).as_bool();
+
+        auto string_to_allowed = [](const string_t &str) -> allowed {
+            if (str == u("all"))
+                return allowed::all;
+            else if (str == u("following"))
+                return allowed::following;
+            else
+                return allowed::none;
+        };
+
+        allowed allow_contributor_request = string_to_allowed(
+            root.at(u("allow_contributor_request")).as_string());
+
+        allowed allow_dms_from =
+            string_to_allowed(root.at(u("allow_dms_from")).as_string());
+        settings.set_smart_mute(is_smart_mute);
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+    return settings;
+}
+
+string_t twitter_client::get_help_languages() const {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    return api.request(web::http::methods::GET, u("help/languages.json"))
         .get()
         .extract_string()
         .get();

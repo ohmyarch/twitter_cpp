@@ -8,7 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-option(BUILD_TESTS "Build tests." ON)
+option(BUILD_EXAMPLES "Build examples." ON)
 option(BUILD_SHARED_LIBS "Build shared Libraries." ON)
 
 if(WIN32)
@@ -48,6 +48,6 @@ set(TWITTER_CPP_LIBRARY ${LIB}twitter)
 
 add_subdirectory(src)
 
-if(BUILD_TESTS)
-  add_subdirectory(tests)
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
 endif()

@@ -1,6 +1,6 @@
-add_executable(twitter_cpp_test twitter_cpp_tests.cc)
+add_executable(get_account_settings get_account_settings.cc)
 
-target_link_libraries(twitter_cpp_test
+target_link_libraries(get_account_settings
   ${Boost_LIBRARIES}
   ${OPENSSL_LIBRARIES}
   ${TWITTER_CPP_LIBRARY}

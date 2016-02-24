@@ -76,33 +76,70 @@ int main(int argc, char *argv[])
     twitter::twitter_client client(consumer_key, consumer_secret, u("oob"));
     client.set_proxy(proxy_uri);
 
-    twitter::string_t &&auth_uri = client.build_authorization_uri();
+    twitter::string_t access_token;
+    twitter::string_t access_token_secret;
 
-    if (auth_uri.empty())
-        return 0;
+    {
+        twitter::ifstream_t access_token_file("access_token");
+        twitter::ifstream_t access_token_secret_file("access_token_secret");
 
-    open_browser(auth_uri);
-
-    std::cout << "Enter the PIN provided by twitter: ";
-
-    twitter::string_t pin;
-    ucin >> pin;
-
-    if (!client.token_from_pin(pin)) {
-        std::cout << "Authorization failed." << std::endl;
-
-        return 0;
+        if (access_token_file.is_open() && access_token_secret_file.is_open()) {
+            access_token_file >> access_token;
+            access_token_secret_file >> access_token_secret;
+        }
     }
 
-    std::cout << "Requesting account information:" << std::endl;
+    twitter::token token(access_token, access_token_secret);
+    if (token.is_valid_access_token()) {
+        client.set_token(token);
+    } else {
+        twitter::string_t &&auth_uri = client.build_authorization_uri();
 
-    ucout << client.get_account_settings() << std::endl;
+        if (auth_uri.empty())
+            return 0;
 
-    twitter::token token = client.token();
+        open_browser(auth_uri);
 
-    twitter::ofstream_t access_token("access_token");
-    twitter::ofstream_t access_token_secret("access_token_secret");
+        std::cout << "Enter the PIN provided by twitter: ";
 
-    access_token << token.access_token();
-    access_token_secret << token.secret();
+        twitter::string_t pin;
+        ucin >> pin;
+
+        if (!client.token_from_pin(pin)) {
+            std::cout << "Authorization failed." << std::endl;
+
+            return 0;
+        }
+
+        token = client.token();
+
+        twitter::ofstream_t access_token_file("access_token");
+        twitter::ofstream_t access_token_secret_file("access_token_secret");
+
+        access_token_file << token.access_token();
+        access_token_secret_file << token.secret();
+    }
+
+    std::cout << "Requesting account information..." << std::endl << std::endl;
+
+    twitter::account_settings settings = client.get_account_settings();
+    std::cout << std::boolalpha << "time_zone:" << std::endl
+              << "  name: " << settings.time_zone().name() << std::endl
+              << "  utc_offset: " << settings.time_zone().utc_offset()
+              << std::endl
+              << "  tzinfo_name: " << settings.time_zone().tzinfo_name()
+              << std::endl
+              << "protected: " << settings.is_protected() << std::endl
+              << "screen_name: " << settings.screen_name() << std::endl
+              << "always_use_https: " << settings.is_always_use_https()
+              << std::endl
+              << "use_cookie_personalization: "
+              << settings.is_use_cookie_personalization() << std::endl
+              << "geo_enabled: " << settings.is_geo_enabled() << std::endl
+              << "discoverable_by_email: "
+              << settings.is_discoverable_by_email() << std::endl
+              << "discoverable_by_mobile_phone: "
+              << settings.is_discoverable_by_mobile_phone() << std::endl
+              << "display_sensitive_media: "
+              << settings.is_display_sensitive_media() << std::endl;
 }

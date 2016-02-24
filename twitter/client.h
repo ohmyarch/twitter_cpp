@@ -28,16 +28,16 @@
 
 #pragma once
 
-#include "twitter/details/basic_types.h"
+#include "twitter/details/return_types.h"
 #include <cpprest/http_client.h>
 #include <cpprest/oauth1.h>
-class string_t;
 
 namespace twitter {
 // enum class error : std::uint8_t {};
 
 class token {
   public:
+    token();
     token(const string_t &access_token, const string_t &secret)
         : access_token_(access_token), secret_(secret) {}
 
@@ -46,10 +46,10 @@ class token {
     }
     void set_secret(const string_t &secret) { secret_ = secret; }
 
-    string_t access_token() { return access_token_; }
-    string_t secret() { return secret_; }
+    string_t access_token() const { return access_token_; }
+    string_t secret() const { return secret_; }
 
-    bool valid_access_token() {
+    bool is_valid_access_token() {
         return !(access_token_.empty() || secret_.empty());
     }
 
@@ -64,6 +64,12 @@ class twitter_client {
                    const string_t &consumer_secret,
                    const string_t &callback_uri);
 
+    void set_token(const token &token) {
+        oauth1_config_.set_token(web::http::oauth1::experimental::oauth1_token(
+            token.access_token(), token.secret()));
+
+        http_client_config_.set_oauth1(oauth1_config_);
+    }
     void set_proxy(const string_t &proxy_uri) {
         web::web_proxy proxy(proxy_uri);
         oauth1_config_.set_proxy(proxy);
@@ -96,7 +102,8 @@ class twitter_client {
     string_t build_authorization_uri();
     bool token_from_pin(const string_t &pin);
 
-    string_t get_account_settings() const;
+    account_settings get_account_settings() const;
+    string_t get_help_languages() const;
 
   protected:
     web::http::client::http_client_config http_client_config_;
