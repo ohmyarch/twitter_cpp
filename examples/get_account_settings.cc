@@ -120,8 +120,8 @@ int main(int argc, char *argv[])
         access_token_secret_file << token.secret();
     }
 
-    auto allowed_to_string = [](
-        const twitter::allowed who) -> twitter::string_t {
+    auto allowed_to_string =
+        [](const twitter::allowed who) -> twitter::string_t {
         if (who == twitter::allowed::all)
             return u("all");
         else if (who == twitter::allowed::following)
@@ -152,5 +152,12 @@ int main(int argc, char *argv[])
           << settings.is_discoverable_by_mobile_phone() << std::endl
           << u("display_sensitive_media: ")
           << settings.is_display_sensitive_media() << std::endl
+          << u("allow_contributor_request: ")
+          << allowed_to_string(settings.allow_contributor_request())
+          << std::endl
+          << u("allow_dms_from: ")
+          << allowed_to_string(settings.allow_dms_from()) << std::endl
+          << u("allow_dm_groups_from: ")
+          << allowed_to_string(settings.allow_dm_groups_from()) << std::endl
           << u("smart_mute: ") << settings.smart_mute() << std::endl;
 }

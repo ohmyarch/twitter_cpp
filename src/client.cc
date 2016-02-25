@@ -132,6 +132,7 @@ account_settings twitter_client::get_account_settings() const {
         settings.set_display_sensitive_media(is_display_sensitive_media);
 
         bool is_smart_mute = root.at(u("smart_mute")).as_bool();
+        settings.set_smart_mute(is_smart_mute);
 
         auto string_to_allowed = [](const string_t &str) -> allowed {
             if (str == u("all"))
@@ -144,10 +145,15 @@ account_settings twitter_client::get_account_settings() const {
 
         allowed allow_contributor_request = string_to_allowed(
             root.at(u("allow_contributor_request")).as_string());
+        settings.set_allow_contributor_request(allow_contributor_request);
 
         allowed allow_dms_from =
             string_to_allowed(root.at(u("allow_dms_from")).as_string());
-        settings.set_smart_mute(is_smart_mute);
+        settings.set_allow_dms_from(allow_dms_from);
+
+        allowed allow_dm_groups_from =
+            string_to_allowed(root.at(u("allow_dm_groups_from")).as_string());
+        settings.set_allow_dm_groups_from(allow_dm_groups_from);
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }

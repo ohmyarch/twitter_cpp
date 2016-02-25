@@ -71,15 +71,82 @@ enum class allowed : std::uint8_t { all, following, none };
 
 class language_info {
   public:
-    language_info(const language lang) {}
+    language_info(const language lang) {
+        switch (lang) {
+        case language::fr:
+            break;
+        case language::en:
+            break;
+        case language::ar:
+            break;
+        case language::ja:
+            break;
+        case language::es:
+            break;
+        case language::de:
+            break;
+        case language::it:
+            break;
+        case language::id:
+            break;
+        case language::pt:
+            break;
+        case language::ko:
+            break;
+        case language::tr:
+            break;
+        case language::ru:
+            break;
+        case language::nl:
+            break;
+        case language::fil:
+            break;
+        case language::msa:
+            break;
+        case language::zh_tw:
+            break;
+        case language::zh_cn:
+            break;
+        case language::hi:
+            break;
+        case language::no:
+            break;
+        case language::sv:
+            break;
+        case language::fi:
+            break;
+        case language::da:
+            break;
+        case language::pl:
+            break;
+        case language::hu:
+            break;
+        case language::fa:
+            break;
+        case language::he:
+            break;
+        case language::th:
+            break;
+        case language::uk:
+            break;
+        case language::cs:
+            break;
+        case language::ro:
+            break;
+        case language::en_gb:
+            break;
+        case language::vi:
+            break;
+        case language::bn:
+            break;
+        }
+    }
     language_info(const string_t &code, const string_t &name,
                   const string_t &status) {}
 
     void set_code(const string_t &code) { code_ = code; }
     void set_name(const string_t &name) { name_ = name; }
     void set_status(const string_t &status) { status_ = status; }
-
-    // language to_enum() const {}
 
   private:
     string_t code_;
@@ -152,6 +219,9 @@ class account_settings {
         allow_contributor_request_ = who;
     }
     void set_allow_dms_from(const allowed who) { allow_dms_from_ = who; }
+    void set_allow_dm_groups_from(const allowed who) {
+        allow_dm_groups_from_ = who;
+    }
     void set_time_zone(const time_zone &time_zone) { time_zone_ = time_zone; }
     void set_screen_name(const string_t &screen_name) {
         screen_name_ = screen_name;
@@ -173,6 +243,7 @@ class account_settings {
         return allow_contributor_request_;
     }
     allowed allow_dms_from() const { return allow_dms_from_; }
+    allowed allow_dm_groups_from() const { return allow_dm_groups_from_; }
     twitter::time_zone time_zone() const { return time_zone_; }
     string_t screen_name() const { return screen_name_; }
 
@@ -187,6 +258,7 @@ class account_settings {
     bool smart_mute_;
     allowed allow_contributor_request_;
     allowed allow_dms_from_;
+    allowed allow_dm_groups_from_;
     twitter::time_zone time_zone_;
     string_t screen_name_;
 
