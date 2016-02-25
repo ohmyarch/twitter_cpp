@@ -120,26 +120,37 @@ int main(int argc, char *argv[])
         access_token_secret_file << token.secret();
     }
 
+    auto allowed_to_string = [](
+        const twitter::allowed who) -> twitter::string_t {
+        if (who == twitter::allowed::all)
+            return u("all");
+        else if (who == twitter::allowed::following)
+            return u("following");
+        else
+            return u("none");
+    };
+
     std::cout << "Requesting account information..." << std::endl << std::endl;
 
     twitter::account_settings settings = client.get_account_settings();
-    std::cout << std::boolalpha << "time_zone:" << std::endl
-              << "  name: " << settings.time_zone().name() << std::endl
-              << "  utc_offset: " << settings.time_zone().utc_offset()
-              << std::endl
-              << "  tzinfo_name: " << settings.time_zone().tzinfo_name()
-              << std::endl
-              << "protected: " << settings.is_protected() << std::endl
-              << "screen_name: " << settings.screen_name() << std::endl
-              << "always_use_https: " << settings.is_always_use_https()
-              << std::endl
-              << "use_cookie_personalization: "
-              << settings.is_use_cookie_personalization() << std::endl
-              << "geo_enabled: " << settings.is_geo_enabled() << std::endl
-              << "discoverable_by_email: "
-              << settings.is_discoverable_by_email() << std::endl
-              << "discoverable_by_mobile_phone: "
-              << settings.is_discoverable_by_mobile_phone() << std::endl
-              << "display_sensitive_media: "
-              << settings.is_display_sensitive_media() << std::endl;
+    ucout << std::boolalpha << u("time_zone:") << std::endl
+          << u("  name: ") << settings.time_zone().name() << std::endl
+          << u("  utc_offset: ") << settings.time_zone().utc_offset()
+          << std::endl
+          << u("  tzinfo_name: ") << settings.time_zone().tzinfo_name()
+          << std::endl
+          << u("protected: ") << settings.is_protected() << std::endl
+          << u("screen_name: ") << settings.screen_name() << std::endl
+          << u("always_use_https: ") << settings.is_always_use_https()
+          << std::endl
+          << u("use_cookie_personalization: ")
+          << settings.is_use_cookie_personalization() << std::endl
+          << u("geo_enabled: ") << settings.is_geo_enabled() << std::endl
+          << u("discoverable_by_email: ") << settings.is_discoverable_by_email()
+          << std::endl
+          << u("discoverable_by_mobile_phone: ")
+          << settings.is_discoverable_by_mobile_phone() << std::endl
+          << u("display_sensitive_media: ")
+          << settings.is_display_sensitive_media() << std::endl
+          << u("smart_mute: ") << settings.smart_mute() << std::endl;
 }
