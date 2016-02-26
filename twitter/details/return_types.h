@@ -59,117 +59,11 @@ enum class hour : std::int8_t {
     _23 = 23
 };
 
-enum class language : std::uint8_t {
-    fr,
-    en,
-    ar,
-    ja,
-    es,
-    de,
-    it,
-    id,
-    pt,
-    ko,
-    tr,
-    ru,
-    nl,
-    fil,
-    msa,
-    zh_tw,
-    zh_cn,
-    hi,
-    no,
-    sv,
-    fi,
-    da,
-    pl,
-    hu,
-    fa,
-    he,
-    th,
-    uk,
-    cs,
-    ro,
-    en_gb,
-    vi,
-    bn
-};
-
 enum class allowed : std::uint8_t { all, following, none };
 
-class language_info {
+class language {
   public:
-    language_info(const language lang) {
-        switch (lang) {
-        case language::fr:
-            break;
-        case language::en:
-            break;
-        case language::ar:
-            break;
-        case language::ja:
-            break;
-        case language::es:
-            break;
-        case language::de:
-            break;
-        case language::it:
-            break;
-        case language::id:
-            break;
-        case language::pt:
-            break;
-        case language::ko:
-            break;
-        case language::tr:
-            break;
-        case language::ru:
-            break;
-        case language::nl:
-            break;
-        case language::fil:
-            break;
-        case language::msa:
-            break;
-        case language::zh_tw:
-            break;
-        case language::zh_cn:
-            break;
-        case language::hi:
-            break;
-        case language::no:
-            break;
-        case language::sv:
-            break;
-        case language::fi:
-            break;
-        case language::da:
-            break;
-        case language::pl:
-            break;
-        case language::hu:
-            break;
-        case language::fa:
-            break;
-        case language::he:
-            break;
-        case language::th:
-            break;
-        case language::uk:
-            break;
-        case language::cs:
-            break;
-        case language::ro:
-            break;
-        case language::en_gb:
-            break;
-        case language::vi:
-            break;
-        case language::bn:
-            break;
-        }
-    }
-    language_info(const string_t &code, const string_t &name,
+    language(const string_t &code, const string_t &name,
                   const string_t &status)
         : code_(code), name_(name), status_(status) {}
 
@@ -273,6 +167,7 @@ class account_settings {
     void set_screen_name(const string_t &screen_name) {
         screen_name_ = screen_name;
     }
+    void set_language(const string_t &language) { language_ = language; }
 
     bool is_protected() const { return protected_; }
     bool is_geo_enabled() const { return geo_enabled_; }
@@ -294,6 +189,7 @@ class account_settings {
     twitter::time_zone time_zone() const { return time_zone_; }
     twitter::sleep_time sleep_time() const { return sleep_time_; }
     string_t screen_name() const { return screen_name_; }
+    string_t language() const { return language_; }
 
   private:
     bool protected_;
@@ -310,6 +206,7 @@ class account_settings {
     twitter::time_zone time_zone_;
     twitter::sleep_time sleep_time_;
     string_t screen_name_;
+    string_t language_;
 
     // bool protected_changed_;
 };

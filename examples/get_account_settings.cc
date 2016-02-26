@@ -36,9 +36,11 @@
 ****************************************************************************/
 
 #include "twitter/client.h"
-#include "twitter/utility.h"
-#include <fstream>
 #include <boost/lexical_cast.hpp>
+#include <fstream>
+#if defined(_WIN32) && !defined(__cplusplus_winrt)
+#include "twitter/utility.h"
+#endif
 
 static const twitter::string_t consumer_key(u("0eDcIJLNpeeSosBdvNQk5cq3u"));
 static const twitter::string_t
@@ -138,40 +140,48 @@ int main(int argc, char *argv[])
             return boost::lexical_cast<twitter::string_t>(i);
     };
 
-    std::cout << "Settings for the authenticating user:" << std::endl
-              << std::endl;
+    auto settings = client.get_account_settings();
+    if (!settings) {
+        std::cout << "Failed." << std::endl;
 
-    twitter::account_settings settings = client.get_account_settings();
-    ucout << std::boolalpha << u("time_zone:") << std::endl
-          << u("  name: ") << settings.time_zone().name() << std::endl
-          << u("  utc_offset: ") << settings.time_zone().utc_offset()
+        return 0;
+    }
+
+    ucout << std::boolalpha << u("Settings for the authenticating user:")
           << std::endl
-          << u("  tzinfo_name: ") << settings.time_zone().tzinfo_name()
           << std::endl
-          << u("protected: ") << settings.is_protected() << std::endl
-          << u("screen_name: ") << settings.screen_name() << std::endl
-          << u("always_use_https: ") << settings.is_always_use_https()
+          << u("time_zone:") << std::endl
+          << u("  name: ") << settings->time_zone().name() << std::endl
+          << u("  utc_offset: ") << settings->time_zone().utc_offset()
+          << std::endl
+          << u("  tzinfo_name: ") << settings->time_zone().tzinfo_name()
+          << std::endl
+          << u("protected: ") << settings->is_protected() << std::endl
+          << u("screen_name: ") << settings->screen_name() << std::endl
+          << u("always_use_https: ") << settings->is_always_use_https()
           << std::endl
           << u("use_cookie_personalization: ")
-          << settings.is_use_cookie_personalization() << std::endl
+          << settings->is_use_cookie_personalization() << std::endl
           << "sleep_time:" << std::endl
-          << "  enabled: " << settings.sleep_time().is_enabled() << std::endl
+          << "  enabled: " << settings->sleep_time().is_enabled() << std::endl
           << "  start_time: "
-          << hour_to_string(settings.sleep_time().start_time()) << std::endl
-          << u("geo_enabled: ") << settings.is_geo_enabled() << std::endl
-          << u("discoverable_by_email: ") << settings.is_discoverable_by_email()
+          << hour_to_string(settings->sleep_time().start_time()) << std::endl
+          << "  end_time: " << hour_to_string(settings->sleep_time().end_time())
           << std::endl
+          << u("geo_enabled: ") << settings->is_geo_enabled() << std::endl
+          << u("language: ") << settings->language() << std::endl
+          << u("discoverable_by_email: ")
+          << settings->is_discoverable_by_email() << std::endl
           << u("discoverable_by_mobile_phone: ")
-          << settings.is_discoverable_by_mobile_phone() << std::endl
+          << settings->is_discoverable_by_mobile_phone() << std::endl
           << u("display_sensitive_media: ")
-          << settings.is_display_sensitive_media() << std::endl
+          << settings->is_display_sensitive_media() << std::endl
           << u("allow_contributor_request: ")
-          << allowed_to_string(settings.allow_contributor_request())
+          << allowed_to_string(settings->allow_contributor_request())
           << std::endl
           << u("allow_dms_from: ")
-          << allowed_to_string(settings.allow_dms_from()) << std::endl
+          << allowed_to_string(settings->allow_dms_from()) << std::endl
           << u("allow_dm_groups_from: ")
-          << allowed_to_string(settings.allow_dm_groups_from()) << std::endl
-          << u("smart_mute: ") << settings.smart_mute() << std::endl;
-    ;
+          << allowed_to_string(settings->allow_dm_groups_from()) << std::endl
+          << u("smart_mute: ") << settings->smart_mute() << std::endl;
 }

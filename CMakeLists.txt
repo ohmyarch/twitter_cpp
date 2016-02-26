@@ -11,9 +11,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 option(BUILD_EXAMPLES "Build examples." ON)
 option(BUILD_SHARED_LIBS "Build shared Libraries." ON)
 
-file(GLOB_RECURSE TITTER_CPP_HEADERS *.h)
+file(GLOB_RECURSE TWITTER_CPP_HEADERS *.h)
 
-add_custom_target(headers SOURCES ${TITTER_CPP_HEADERS})
+add_custom_target(headers SOURCES ${TWITTER_CPP_HEADERS})
 
 if(WIN32)
   option(Boost_USE_STATIC_LIBS ON)

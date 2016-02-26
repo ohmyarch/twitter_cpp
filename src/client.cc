@@ -41,7 +41,7 @@ twitter_client::twitter_client(const string_t &consumer_key,
           u("https://api.twitter.com/oauth/access_token"), callback_uri,
           web::http::oauth1::experimental::oauth1_methods::hmac_sha1) {}
 
-void twitter_client::listen_for_code() {
+/* void twitter_client::listen_for_code() {
     auto listener =
         std::make_unique<web::http::experimental::listener::http_listener>(
             web::http::uri(oauth1_config_.callback_uri()));
@@ -50,7 +50,7 @@ void twitter_client::listen_for_code() {
         string_t ss = request.request_uri().query();
     });
     listener->open().wait();
-}
+} */
 
 string_t twitter_client::build_authorization_uri() {
     auto auth_uri_task = oauth1_config_.build_authorization_uri();
@@ -80,7 +80,8 @@ bool twitter_client::token_from_pin(const string_t &pin) {
     return true;
 }
 
-account_settings twitter_client::get_account_settings() const {
+std::experimental::optional<account_settings>
+twitter_client::get_account_settings() const {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
@@ -126,6 +127,9 @@ account_settings twitter_client::get_account_settings() const {
         bool is_geo_enabled = root.at(u("geo_enabled")).as_bool();
         settings.set_geo_enabled(is_geo_enabled);
 
+        string_t language = root.at(u("language")).as_string();
+        settings.set_language(language);
+
         bool is_discoverable_by_email =
             root.at(u("discoverable_by_email")).as_bool();
         settings.set_discoverable_by_email(is_discoverable_by_email);
@@ -164,13 +168,15 @@ account_settings twitter_client::get_account_settings() const {
         settings.set_allow_dm_groups_from(allow_dm_groups_from);
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
+
+        return std::experimental::optional<account_settings>();
     }
 
-    return settings;
+    return std::experimental::make_optional(settings);
 }
 
-std::vector<language_info> twitter_client::get_help_languages() const {
-    std::vector<language_info> languages;
+std::vector<language> twitter_client::get_help_languages() const {
+    std::vector<language> languages;
 
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
@@ -191,7 +197,7 @@ std::vector<language_info> twitter_client::get_help_languages() const {
         code = object.at(u("code")).as_string();
         name = object.at(u("name")).as_string();
         status = object.at(u("status")).as_string();
-        languages.emplace_back(language_info(code, name, status));
+        languages.emplace_back(code, name, status);
     }
 
     return languages;

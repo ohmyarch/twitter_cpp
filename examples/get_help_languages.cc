@@ -120,10 +120,22 @@ int main(int argc, char *argv[])
         access_token_secret_file << token.secret();
     }
 
+    std::vector<twitter::language> languages = client.get_help_languages();
+    if (languages.empty()) {
+        std::cout << "Failed." << std::endl;
+    }
+
     std::cout << "Languages supported by Twitter:" << std::endl << std::endl;
 
-    std::vector<twitter::language_info> languages = client.get_help_languages();
+    std::size_t index = 0;
+    std::size_t size = languages.size();
 
-    for (auto &e : languages)
-        ucout << e.name() << std::endl;
+    for (auto &e : languages) {
+        ucout << u("code: ") << e.code() << std::endl
+              << u("name: ") << e.name() << std::endl
+              << u("status: ") << e.status() << std::endl;
+
+        if (++index < size)
+            std::cout << std::endl;
+    }
 }

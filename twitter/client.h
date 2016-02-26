@@ -31,6 +31,7 @@
 #include "twitter/details/return_types.h"
 #include <cpprest/http_client.h>
 #include <cpprest/oauth1.h>
+#include <experimental/optional>
 
 namespace twitter {
 // enum class error : std::uint8_t {};
@@ -98,12 +99,12 @@ class twitter_client {
                               oauth1_token.secret());
     }
 
-    void listen_for_code();
+    // void listen_for_code();
     string_t build_authorization_uri();
     bool token_from_pin(const string_t &pin);
 
-    account_settings get_account_settings() const;
-    std::vector<language_info> get_help_languages() const;
+    std::experimental::optional<account_settings> get_account_settings() const;
+    std::vector<language> get_help_languages() const;
 
   protected:
     web::http::client::http_client_config http_client_config_;
