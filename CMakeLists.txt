@@ -11,13 +11,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 option(BUILD_EXAMPLES "Build examples." ON)
 option(BUILD_SHARED_LIBS "Build shared Libraries." ON)
 
+file(GLOB_RECURSE TITTER_CPP_HEADERS *.h)
+
+add_custom_target(headers SOURCES ${TITTER_CPP_HEADERS})
+
 if(WIN32)
   option(Boost_USE_STATIC_LIBS ON)
 endif()
 
 find_package(Threads REQUIRED)
 find_package(Casablanca REQUIRED)
-find_package(Boost REQUIRED COMPONENTS random chrono system thread regex filesystem)
+find_package(Boost REQUIRED COMPONENTS locale random chrono system thread regex filesystem)
 
 if(APPLE AND NOT OPENSSL_ROOT_DIR)
   file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/*)

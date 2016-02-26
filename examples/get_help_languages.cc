@@ -38,7 +38,6 @@
 #include "twitter/client.h"
 #include "twitter/utility.h"
 #include <fstream>
-#include <boost/lexical_cast.hpp>
 
 static const twitter::string_t consumer_key(u("0eDcIJLNpeeSosBdvNQk5cq3u"));
 static const twitter::string_t
@@ -121,57 +120,10 @@ int main(int argc, char *argv[])
         access_token_secret_file << token.secret();
     }
 
-    auto allowed_to_string = [](const twitter::allowed who) {
-        if (who == twitter::allowed::all)
-            return u("all");
-        else if (who == twitter::allowed::following)
-            return u("following");
-        else
-            return u("none");
-    };
+    std::cout << "Languages supported by Twitter:" << std::endl << std::endl;
 
-    int i;
-    auto hour_to_string = [&i](const twitter::hour hour) {
-        if ((i = static_cast<int>(hour)) == -1)
-            return twitter::string_t(u("null"));
-        else
-            return boost::lexical_cast<twitter::string_t>(i);
-    };
+    std::vector<twitter::language_info> languages = client.get_help_languages();
 
-    std::cout << "Settings for the authenticating user:" << std::endl
-              << std::endl;
-
-    twitter::account_settings settings = client.get_account_settings();
-    ucout << std::boolalpha << u("time_zone:") << std::endl
-          << u("  name: ") << settings.time_zone().name() << std::endl
-          << u("  utc_offset: ") << settings.time_zone().utc_offset()
-          << std::endl
-          << u("  tzinfo_name: ") << settings.time_zone().tzinfo_name()
-          << std::endl
-          << u("protected: ") << settings.is_protected() << std::endl
-          << u("screen_name: ") << settings.screen_name() << std::endl
-          << u("always_use_https: ") << settings.is_always_use_https()
-          << std::endl
-          << u("use_cookie_personalization: ")
-          << settings.is_use_cookie_personalization() << std::endl
-          << "sleep_time:" << std::endl
-          << "  enabled: " << settings.sleep_time().is_enabled() << std::endl
-          << "  start_time: "
-          << hour_to_string(settings.sleep_time().start_time()) << std::endl
-          << u("geo_enabled: ") << settings.is_geo_enabled() << std::endl
-          << u("discoverable_by_email: ") << settings.is_discoverable_by_email()
-          << std::endl
-          << u("discoverable_by_mobile_phone: ")
-          << settings.is_discoverable_by_mobile_phone() << std::endl
-          << u("display_sensitive_media: ")
-          << settings.is_display_sensitive_media() << std::endl
-          << u("allow_contributor_request: ")
-          << allowed_to_string(settings.allow_contributor_request())
-          << std::endl
-          << u("allow_dms_from: ")
-          << allowed_to_string(settings.allow_dms_from()) << std::endl
-          << u("allow_dm_groups_from: ")
-          << allowed_to_string(settings.allow_dm_groups_from()) << std::endl
-          << u("smart_mute: ") << settings.smart_mute() << std::endl;
-    ;
+    for (auto &e : languages)
+        ucout << e.name() << std::endl;
 }

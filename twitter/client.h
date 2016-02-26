@@ -103,7 +103,7 @@ class twitter_client {
     bool token_from_pin(const string_t &pin);
 
     account_settings get_account_settings() const;
-    string_t get_help_languages() const;
+    std::vector<language_info> get_help_languages() const;
 
   protected:
     web::http::client::http_client_config http_client_config_;

@@ -94,11 +94,10 @@ account_settings twitter_client::get_account_settings() const {
     account_settings settings;
 
     try {
-        auto time_zone = root.at(u("time_zone")).as_object();
+        web::json::object time_zone = root.at(u("time_zone")).as_object();
         string_t name = time_zone[u("name")].as_string();
         int utc_offset = time_zone[u("utc_offset")].as_integer();
         string_t tzinfo_name = time_zone[u("tzinfo_name")].as_string();
-
         settings.set_time_zone(
             twitter::time_zone(name, utc_offset, tzinfo_name));
 
@@ -114,6 +113,15 @@ account_settings twitter_client::get_account_settings() const {
         bool is_use_cookie_personalization =
             root.at(u("use_cookie_personalization")).as_bool();
         settings.set_use_cookie_personalization(is_use_cookie_personalization);
+
+        web::json::object sleep_time = root.at(u("sleep_time")).as_object();
+        if (sleep_time[u("enabled")].as_bool()) {
+            hour start_time =
+                static_cast<hour>(sleep_time[u("start_time")].as_integer());
+            hour end_time =
+                static_cast<hour>(sleep_time[u("end_time")].as_integer());
+            settings.set_sleep_time(twitter::sleep_time(start_time, end_time));
+        }
 
         bool is_geo_enabled = root.at(u("geo_enabled")).as_bool();
         settings.set_geo_enabled(is_geo_enabled);
@@ -134,7 +142,7 @@ account_settings twitter_client::get_account_settings() const {
         bool is_smart_mute = root.at(u("smart_mute")).as_bool();
         settings.set_smart_mute(is_smart_mute);
 
-        auto string_to_allowed = [](const string_t &str) -> allowed {
+        auto string_to_allowed = [](const string_t &str) {
             if (str == u("all"))
                 return allowed::all;
             else if (str == u("following"))
@@ -161,13 +169,31 @@ account_settings twitter_client::get_account_settings() const {
     return settings;
 }
 
-string_t twitter_client::get_help_languages() const {
+std::vector<language_info> twitter_client::get_help_languages() const {
+    std::vector<language_info> languages;
+
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
-    return api.request(web::http::methods::GET, u("help/languages.json"))
-        .get()
-        .extract_string()
-        .get();
+    web::json::array root =
+        api.request(web::http::methods::GET, u("help/languages.json"))
+            .get()
+            .extract_json()
+            .get()
+            .as_array();
+
+    string_t code;
+    string_t name;
+    string_t status;
+
+    for (auto &e : root) {
+        web::json::object object = e.as_object();
+        code = object.at(u("code")).as_string();
+        name = object.at(u("name")).as_string();
+        status = object.at(u("status")).as_string();
+        languages.emplace_back(language_info(code, name, status));
+    }
+
+    return languages;
 }
 }

@@ -31,6 +31,34 @@
 #include "twitter/details/basic_types.h"
 
 namespace twitter {
+enum class hour : std::int8_t {
+    null = -1,
+    _00 = 0,
+    _01 = 1,
+    _02 = 2,
+    _03 = 3,
+    _04 = 4,
+    _05 = 5,
+    _06 = 6,
+    _07 = 7,
+    _08 = 8,
+    _09 = 9,
+    _10 = 10,
+    _11 = 11,
+    _12 = 12,
+    _13 = 13,
+    _14 = 14,
+    _15 = 15,
+    _16 = 16,
+    _17 = 17,
+    _18 = 18,
+    _19 = 19,
+    _20 = 20,
+    _21 = 21,
+    _22 = 22,
+    _23 = 23
+};
+
 enum class language : std::uint8_t {
     fr,
     en,
@@ -142,11 +170,16 @@ class language_info {
         }
     }
     language_info(const string_t &code, const string_t &name,
-                  const string_t &status) {}
+                  const string_t &status)
+        : code_(code), name_(name), status_(status) {}
 
     void set_code(const string_t &code) { code_ = code; }
     void set_name(const string_t &name) { name_ = name; }
     void set_status(const string_t &status) { status_ = status; }
+
+    string_t code() const { return code_; }
+    string_t name() const { return name_; }
+    string_t status() const { return status_; }
 
   private:
     string_t code_;
@@ -179,12 +212,23 @@ class time_zone {
 
 class sleep_time {
   public:
-    sleep_time();
+    sleep_time() {}
+    sleep_time(const hour start_time, const hour end_time) {
+        if ((start_time != hour::null) && (end_time != hour::null)) {
+            start_time_ = start_time;
+            end_time_ = end_time;
+            enabled_ = true;
+        }
+    }
+
+    bool is_enabled() const { return enabled_; }
+    hour start_time() const { return start_time_; }
+    hour end_time() const { return end_time_; }
 
   private:
-    bool enabled_;
-    int end_time_;
-    int start_time_;
+    bool enabled_ = false;
+    hour start_time_ = hour::null;
+    hour end_time_ = hour::null;
 };
 
 class account_settings {
@@ -223,6 +267,9 @@ class account_settings {
         allow_dm_groups_from_ = who;
     }
     void set_time_zone(const time_zone &time_zone) { time_zone_ = time_zone; }
+    void set_sleep_time(const sleep_time sleep_time) {
+        sleep_time_ = sleep_time;
+    }
     void set_screen_name(const string_t &screen_name) {
         screen_name_ = screen_name;
     }
@@ -245,6 +292,7 @@ class account_settings {
     allowed allow_dms_from() const { return allow_dms_from_; }
     allowed allow_dm_groups_from() const { return allow_dm_groups_from_; }
     twitter::time_zone time_zone() const { return time_zone_; }
+    twitter::sleep_time sleep_time() const { return sleep_time_; }
     string_t screen_name() const { return screen_name_; }
 
   private:
@@ -260,6 +308,7 @@ class account_settings {
     allowed allow_dms_from_;
     allowed allow_dm_groups_from_;
     twitter::time_zone time_zone_;
+    twitter::sleep_time sleep_time_;
     string_t screen_name_;
 
     // bool protected_changed_;
