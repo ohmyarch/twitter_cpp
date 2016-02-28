@@ -63,8 +63,7 @@ enum class allowed : std::uint8_t { all, following, none };
 
 class language {
   public:
-    language(const string_t &code, const string_t &name,
-                  const string_t &status)
+    language(const string_t &code, const string_t &name, const string_t &status)
         : code_(code), name_(name), status_(status) {}
 
     void set_code(const string_t &code) { code_ = code; }

@@ -192,12 +192,16 @@ std::vector<language> twitter_client::get_help_languages() const {
     string_t name;
     string_t status;
 
-    for (auto &e : root) {
-        web::json::object object = e.as_object();
-        code = object.at(u("code")).as_string();
-        name = object.at(u("name")).as_string();
-        status = object.at(u("status")).as_string();
-        languages.emplace_back(code, name, status);
+    try {
+        for (auto &e : root) {
+            web::json::object object = e.as_object();
+            code = object.at(u("code")).as_string();
+            name = object.at(u("name")).as_string();
+            status = object.at(u("status")).as_string();
+            languages.emplace_back(code, name, status);
+        }
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
     }
 
     return languages;

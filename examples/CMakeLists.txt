@@ -1,5 +1,5 @@
-add_executable(get_account_settings get_account_settings.cc)
-add_executable(get_help_languages get_help_languages.cc)
+add_executable(get_account_settings common.cc get_account_settings.cc)
+add_executable(get_help_languages common.cc get_help_languages.cc)
 
 set(TWITTER_CPP_LIBRARYS
   ${Boost_LIBRARIES}
