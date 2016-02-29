@@ -16,7 +16,7 @@
 **     notice, this list of conditions and the following disclaimer in
 **     the documentation and/or other materials provided with the
 **     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
+**   * Neither the name of the twitter_cpp library nor the names of its
 **     contributors may be used to endorse or promote products derived
 **     from this software without specific prior written permission.
 **
@@ -44,7 +44,14 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    auto client = auth();
+    auto init = ::init(argc, argv, "get_account_settings");
+    init_flag flag = std::get<0>(init);
+    if (flag == init_flag::error)
+        return 1;
+    else if (flag == init_flag::show_help)
+        return 0;
+
+    auto client = auth(std::get<1>(init));
     if (!client) {
         std::cout << "Failed." << std::endl;
 

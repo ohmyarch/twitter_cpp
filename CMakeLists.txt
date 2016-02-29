@@ -11,17 +11,18 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 option(BUILD_EXAMPLES "Build examples." ON)
 option(BUILD_SHARED_LIBS "Build shared Libraries." ON)
 
-file(GLOB_RECURSE TWITTER_CPP_HEADERS *.h)
-
-add_custom_target(headers SOURCES ${TWITTER_CPP_HEADERS})
-
 if(WIN32)
   option(Boost_USE_STATIC_LIBS ON)
 endif()
 
 find_package(Threads REQUIRED)
 find_package(Casablanca REQUIRED)
-find_package(Boost REQUIRED COMPONENTS locale random chrono system thread regex filesystem)
+
+if(BUILD_EXAMPLES)
+  find_package(Boost REQUIRED COMPONENTS random chrono system thread regex filesystem program_options)
+else()
+  find_package(Boost REQUIRED COMPONENTS random chrono system thread regex filesystem)
+endif()
 
 if(APPLE AND NOT OPENSSL_ROOT_DIR)
   file(GLOB OPENSSL_ROOT_DIR /usr/local/Cellar/openssl/*)
@@ -29,6 +30,10 @@ if(APPLE AND NOT OPENSSL_ROOT_DIR)
 endif()
 set(_OPENSSL_VERSION "")
 find_package(OpenSSL 1.0.0 REQUIRED)
+
+file(GLOB_RECURSE TWITTER_CPP_HEADERS *.h)
+
+add_custom_target(headers SOURCES ${TWITTER_CPP_HEADERS})
 
 include_directories(${CMAKE_SOURCE_DIR} ${OPENSSL_INCLUDE_DIR} ${CASABLANCA_INCLUDE_DIRS})
 

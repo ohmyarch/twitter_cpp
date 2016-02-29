@@ -16,7 +16,7 @@
  **     notice, this list of conditions and the following disclaimer in
  **     the documentation and/or other materials provided with the
  **     distribution.
- **   * Neither the name of The Qt Company Ltd nor the names of its
+ **   * Neither the name of the twitter_cpp library nor the names of its
  **     contributors may be used to endorse or promote products derived
  **     from this software without specific prior written permission.
  **
@@ -36,10 +36,13 @@
  ****************************************************************************/
 
 #include "common.h"
+#include <boost/program_options.hpp>
 
-std::experimental::optional<twitter::twitter_client> auth() {
+std::experimental::optional<twitter::twitter_client>
+auth(const twitter::string_t &proxy_uri) {
     twitter::twitter_client client(consumer_key, consumer_secret, u("oob"));
-    client.set_proxy(proxy_uri);
+    if (!proxy_uri.empty())
+        client.set_proxy(proxy_uri);
 
     twitter::string_t access_token;
     twitter::string_t access_token_secret;
@@ -83,4 +86,59 @@ std::experimental::optional<twitter::twitter_client> auth() {
     }
 
     return std::experimental::make_optional(client);
+}
+
+std::pair<init_flag, twitter::string_t>
+init(const int argc, char **argv, const std::string &application_name) {
+    try {
+        boost::program_options::options_description generic("generic options");
+        generic.add_options()("help,h", "print this help");
+
+        boost::program_options::options_description proxy("proxy options");
+        proxy.add_options()(
+            "proxy-uri,x", boost::program_options::value<twitter::string_t>(),
+            "[protocol://]host[:port]  use proxy on given port");
+
+        boost::program_options::options_description input;
+        input.add_options()("input",
+                            boost::program_options::value<std::string>());
+
+        boost::program_options::options_description visible;
+        visible.add(generic).add(proxy);
+
+        boost::program_options::options_description opt_desc;
+        opt_desc.add(generic).add(proxy).add(input);
+
+        boost::program_options::positional_options_description pos_opt_desc;
+        pos_opt_desc.add("input", 0);
+
+        boost::program_options::variables_map map;
+        boost::program_options::store(
+            boost::program_options::command_line_parser(argc, argv)
+                .options(opt_desc)
+                .positional(pos_opt_desc)
+                .run(),
+            map);
+        boost::program_options::notify(map);
+
+        if (map.count("help")) {
+            std::cout << "Usage: " + application_name + " [options]"
+                      << std::endl
+                      << visible;
+            return std::make_pair(init_flag::show_help, u(""));
+        } else if (map.count("proxy-uri")) {
+            return std::make_pair(init_flag::normal,
+                                  map["proxy-uri"].as<twitter::string_t>());
+        } else {
+            return std::make_pair(init_flag::normal, u(""));
+            ;
+        }
+    } catch (const std::exception &e) {
+        std::cout << e.what() << std::endl
+                  << "try '" + application_name +
+                         " --help' for more information"
+                  << std::endl;
+
+        return std::make_pair(init_flag::error, u(""));
+    }
 }

@@ -16,7 +16,7 @@
  **     notice, this list of conditions and the following disclaimer in
  **     the documentation and/or other materials provided with the
  **     distribution.
- **   * Neither the name of The Qt Company Ltd nor the names of its
+ **   * Neither the name of the twitter_cpp library nor the names of its
  **     contributors may be used to endorse or promote products derived
  **     from this software without specific prior written permission.
  **
@@ -47,7 +47,8 @@ const twitter::string_t consumer_key(u("0eDcIJLNpeeSosBdvNQk5cq3u"));
 const twitter::string_t
     consumer_secret(u("zltRuNwj1twFxKBMb22Kz8DSRqgW9W3lxCO9EstlqDCysJc6le"));
 const twitter::string_t callback_uri(u("http://127.0.0.1:8890/"));
-static const twitter::string_t proxy_uri(u("http://127.0.0.1:8118/"));
+
+enum class init_flag : std::uint8_t { error, normal, show_help };
 
 inline bool open_browser(const twitter::string_t &uri) {
 #if defined(_WIN32) && !defined(__cplusplus_winrt)
@@ -71,4 +72,8 @@ inline bool open_browser(const twitter::string_t &uri) {
 #endif
 }
 
-std::experimental::optional<twitter::twitter_client> auth();
+std::experimental::optional<twitter::twitter_client>
+auth(const twitter::string_t &proxy_uri);
+
+std::pair<init_flag, twitter::string_t>
+init(const int argc, char **argv, const std::string &application_name);
