@@ -43,7 +43,7 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    auto init = ::init(argc, argv, "get_help_languages");
+    auto init = ::init(argc, argv, "get_help_configuration");
     init_flag flag = std::get<0>(init);
     if (flag == init_flag::error)
         return 1;
@@ -57,24 +57,23 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    std::vector<twitter::language> &&languages = client->get_help_languages();
-    if (languages.empty()) {
+    auto config = client->get_help_configuration();
+    if (!config) {
         std::cout << "Failed." << std::endl;
 
         return 0;
     }
 
-    std::cout << "Languages supported by Twitter:" << std::endl << std::endl;
-
-    std::size_t index = 0;
-    std::size_t size = languages.size();
-
-    for (auto &e : languages) {
-        ucout << u("code: ") << e.code() << std::endl
-              << u("name: ") << e.name() << std::endl
-              << u("status: ") << e.status() << std::endl;
-
-        if (++index < size)
-            std::cout << std::endl;
-    }
+    ucout << u("The current configuration used by Twitter:") << std::endl
+          << std::endl
+          << u("dm_text_character_limit: ") << config->dm_text_character_limit()
+          << std::endl
+          << u("characters_reserved_per_media: ")
+          << config->characters_reserved_per_media() << std::endl
+          << u("max_media_per_upload: ") << config->max_media_per_upload()
+          << std::endl
+          << u("short_url_length: ") << config->short_url_length() << std::endl
+          << u("short_url_length_https: ") << config->short_url_length_https()
+          << std::endl
+          << u("photo_size_limit: ") << config->photo_size_limit() << std::endl;
 }

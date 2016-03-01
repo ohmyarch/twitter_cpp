@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include <vector>
 #include "twitter/details/basic_types.h"
 
 namespace twitter {
@@ -208,5 +209,41 @@ class account_settings {
     string_t language_;
 
     // bool protected_changed_;
+};
+
+class photo_size {};
+
+class configuration {
+  public:
+    std::uint16_t dm_text_character_limit() const {
+        return dm_text_character_limit_;
+    }
+    std::uint16_t characters_reserved_per_media() const {
+        return characters_reserved_per_media_;
+    }
+    std::uint16_t max_media_per_upload() const { return max_media_per_upload_; }
+    std::uint16_t short_url_length() const { return short_url_length_; }
+    std::uint16_t short_url_length_https() const {
+        return short_url_length_https_;
+    }
+    std::uint32_t photo_size_limit() const { return photo_size_limit_; }
+    std::vector<std::string> non_username_paths() const {
+        return non_username_paths_;
+    }
+
+  private:
+    friend class twitter_client;
+
+    std::uint16_t dm_text_character_limit_;
+    std::uint16_t characters_reserved_per_media_;
+    std::uint16_t max_media_per_upload_;
+    std::uint16_t short_url_length_;
+    std::uint16_t short_url_length_https_;
+    std::uint32_t photo_size_limit_;
+    photo_size large_photo_size_;
+    photo_size medium_photo_size_;
+    photo_size small_photo_size_;
+    photo_size thumb_photo_size_;
+    std::vector<std::string> non_username_paths_;
 };
 }

@@ -19,9 +19,9 @@ find_package(Threads REQUIRED)
 find_package(Casablanca REQUIRED)
 
 if(BUILD_EXAMPLES)
-  find_package(Boost REQUIRED COMPONENTS random chrono system thread regex filesystem program_options)
+  find_package(Boost REQUIRED COMPONENTS random chrono system thread program_options)
 else()
-  find_package(Boost REQUIRED COMPONENTS random chrono system thread regex filesystem)
+  find_package(Boost REQUIRED COMPONENTS random chrono system thread)
 endif()
 
 if(APPLE AND NOT OPENSSL_ROOT_DIR)

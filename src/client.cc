@@ -85,16 +85,16 @@ twitter_client::get_account_settings() const {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
-    web::json::object root =
-        api.request(web::http::methods::GET, u("account/settings.json"))
-            .get()
-            .extract_json()
-            .get()
-            .as_object();
-
     account_settings settings;
 
     try {
+        web::json::object root =
+            api.request(web::http::methods::GET, u("account/settings.json"))
+                .get()
+                .extract_json()
+                .get()
+                .as_object();
+
         web::json::object time_zone = root.at(u("time_zone")).as_object();
         string_t name = time_zone[u("name")].as_string();
         int utc_offset = time_zone[u("utc_offset")].as_integer();
@@ -166,13 +166,68 @@ twitter_client::get_account_settings() const {
         allowed allow_dm_groups_from =
             string_to_allowed(root.at(u("allow_dm_groups_from")).as_string());
         settings.set_allow_dm_groups_from(allow_dm_groups_from);
+
+        return std::experimental::make_optional(settings);
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
-
-        return std::experimental::optional<account_settings>();
     }
 
-    return std::experimental::make_optional(settings);
+    return std::experimental::optional<account_settings>();
+}
+
+std::experimental::optional<configuration>
+twitter_client::get_help_configuration() const {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    configuration config;
+
+    try {
+        web::json::object root =
+            api.request(web::http::methods::GET, u("help/configuration.json"))
+                .get()
+                .extract_json()
+                .get()
+                .as_object();
+
+        config.dm_text_character_limit_ = static_cast<std::uint16_t>(
+            root.at(u("dm_text_character_limit")).as_integer());
+
+        config.characters_reserved_per_media_ = static_cast<std::uint16_t>(
+            root.at(u("characters_reserved_per_media")).as_integer());
+
+        config.max_media_per_upload_ = static_cast<std::uint16_t>(
+            root.at(u("max_media_per_upload")).as_integer());
+
+        config.short_url_length_ = static_cast<std::uint16_t>(
+            root.at(u("short_url_length")).as_integer());
+
+        config.short_url_length_https_ = static_cast<std::uint16_t>(
+            root.at(u("short_url_length_https")).as_integer());
+
+        config.photo_size_limit_ =
+            root.at(u("photo_size_limit")).as_number().to_uint32();
+
+        // config.large_photo_size_ = ;
+
+        // config.medium_photo_size_ = ;
+
+        // config.small_photo_size_ = ;
+
+        // config.thumb_photo_size_ = ;
+
+        // config.non_username_paths_ = ;
+
+        return std::experimental::make_optional(config);
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+    return std::experimental::optional<configuration>();
 }
 
 std::vector<language> twitter_client::get_help_languages() const {
@@ -181,18 +236,18 @@ std::vector<language> twitter_client::get_help_languages() const {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
-    web::json::array root =
-        api.request(web::http::methods::GET, u("help/languages.json"))
-            .get()
-            .extract_json()
-            .get()
-            .as_array();
-
     string_t code;
     string_t name;
     string_t status;
 
     try {
+        web::json::array root =
+            api.request(web::http::methods::GET, u("help/languages.json"))
+                .get()
+                .extract_json()
+                .get()
+                .as_array();
+
         for (auto &e : root) {
             web::json::object object = e.as_object();
             code = object.at(u("code")).as_string();
@@ -200,10 +255,58 @@ std::vector<language> twitter_client::get_help_languages() const {
             status = object.at(u("status")).as_string();
             languages.emplace_back(code, name, status);
         }
+
+        return languages;
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return languages;
+    return std::vector<language>();
+}
+
+string_t twitter_client::get_help_privacy() const {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    try {
+        web::json::object root =
+            api.request(web::http::methods::GET, u("help/privacy.json"))
+                .get()
+                .extract_json()
+                .get()
+                .as_object();
+
+        return root.at(u("privacy")).as_string();
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+    return u("");
+}
+
+string_t twitter_client::get_help_tos() const {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    try {
+        web::json::object root =
+            api.request(web::http::methods::GET, u("help/tos.json"))
+                .get()
+                .extract_json()
+                .get()
+                .as_object();
+
+        return root.at(u("tos")).as_string();
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+    return u("");
 }
 }

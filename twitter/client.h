@@ -71,10 +71,19 @@ class twitter_client {
 
         http_client_config_.set_oauth1(oauth1_config_);
     }
-    void set_proxy(const string_t &proxy_uri) {
-        web::web_proxy proxy(proxy_uri);
-        oauth1_config_.set_proxy(proxy);
-        http_client_config_.set_proxy(proxy);
+    bool set_proxy(const string_t &proxy_uri) {
+        try {
+            web::web_proxy proxy(proxy_uri);
+
+            oauth1_config_.set_proxy(proxy);
+            http_client_config_.set_proxy(proxy);
+
+            return true;
+        } catch (const web::uri_exception &e) {
+            std::cout << "Error: " << e.what() << std::endl;
+
+            return false;
+        }
     }
     void set_consumer_key(const string_t &consumer_key) {
         oauth1_config_.set_consumer_key(consumer_key);
@@ -105,6 +114,9 @@ class twitter_client {
 
     std::experimental::optional<account_settings> get_account_settings() const;
     std::vector<language> get_help_languages() const;
+    string_t get_help_privacy() const;
+    string_t get_help_tos() const;
+    std::experimental::optional<configuration> get_help_configuration() const;
 
   protected:
     web::http::client::http_client_config http_client_config_;

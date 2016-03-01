@@ -43,7 +43,7 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    auto init = ::init(argc, argv, "get_help_languages");
+    auto init = ::init(argc, argv, "get_help_privacy");
     init_flag flag = std::get<0>(init);
     if (flag == init_flag::error)
         return 1;
@@ -57,24 +57,14 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    std::vector<twitter::language> &&languages = client->get_help_languages();
-    if (languages.empty()) {
+    twitter::string_t &&privacy = client->get_help_privacy();
+    if (privacy.empty()) {
         std::cout << "Failed." << std::endl;
 
         return 0;
     }
 
-    std::cout << "Languages supported by Twitter:" << std::endl << std::endl;
+    boost::replace_all(privacy, u("&nbsp;"), u(" "));
 
-    std::size_t index = 0;
-    std::size_t size = languages.size();
-
-    for (auto &e : languages) {
-        ucout << u("code: ") << e.code() << std::endl
-              << u("name: ") << e.name() << std::endl
-              << u("status: ") << e.status() << std::endl;
-
-        if (++index < size)
-            std::cout << std::endl;
-    }
+    ucout << privacy << std::endl;
 }

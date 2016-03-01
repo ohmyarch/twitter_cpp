@@ -41,8 +41,11 @@
 std::experimental::optional<twitter::twitter_client>
 auth(const twitter::string_t &proxy_uri) {
     twitter::twitter_client client(consumer_key, consumer_secret, u("oob"));
-    if (!proxy_uri.empty())
-        client.set_proxy(proxy_uri);
+    if (proxy_uri.empty())
+        return std::experimental::optional<twitter::twitter_client>();
+
+    if (!client.set_proxy(proxy_uri))
+        return std::experimental::optional<twitter::twitter_client>();
 
     twitter::string_t access_token;
     twitter::string_t access_token_secret;
