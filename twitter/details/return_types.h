@@ -28,8 +28,8 @@
 
 #pragma once
 
-#include <vector>
 #include "twitter/details/basic_types.h"
+#include <vector>
 
 namespace twitter {
 enum class hour : std::int8_t {
@@ -61,6 +61,8 @@ enum class hour : std::int8_t {
 };
 
 enum class allowed : std::uint8_t { all, following, none };
+
+enum class resize : std::uint8_t { fit, crop };
 
 class language {
   public:
@@ -211,7 +213,19 @@ class account_settings {
     // bool protected_changed_;
 };
 
-class photo_size {};
+class photo_size {
+  public:
+    std::uint16_t h() const { return h_; }
+    std::uint16_t w() const { return w_; }
+    twitter::resize resize() const { return resize_; }
+
+  private:
+    friend class twitter_client;
+
+    std::uint16_t h_;
+    std::uint16_t w_;
+    twitter::resize resize_;
+};
 
 class configuration {
   public:
@@ -227,6 +241,10 @@ class configuration {
         return short_url_length_https_;
     }
     std::uint32_t photo_size_limit() const { return photo_size_limit_; }
+    photo_size thumb_photo_size() const { return thumb_photo_size_; }
+    photo_size small_photo_size() const { return small_photo_size_; }
+    photo_size medium_photo_size() const { return medium_photo_size_; }
+    photo_size large_photo_size() const { return large_photo_size_; }
     std::vector<std::string> non_username_paths() const {
         return non_username_paths_;
     }
@@ -240,10 +258,10 @@ class configuration {
     std::uint16_t short_url_length_;
     std::uint16_t short_url_length_https_;
     std::uint32_t photo_size_limit_;
-    photo_size large_photo_size_;
-    photo_size medium_photo_size_;
-    photo_size small_photo_size_;
     photo_size thumb_photo_size_;
-    std::vector<std::string> non_username_paths_;
+    photo_size small_photo_size_;
+    photo_size medium_photo_size_;
+    photo_size large_photo_size_;
+    std::vector<twitter::string_t> non_username_paths_;
 };
 }

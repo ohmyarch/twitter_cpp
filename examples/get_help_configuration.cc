@@ -75,5 +75,42 @@ int main(int argc, char *argv[])
           << u("short_url_length: ") << config->short_url_length() << std::endl
           << u("short_url_length_https: ") << config->short_url_length_https()
           << std::endl
-          << u("photo_size_limit: ") << config->photo_size_limit() << std::endl;
+          << u("photo_size_limit: ") << config->photo_size_limit() << std::endl
+          << u("photo_sizes:") << std::endl
+          << u("  thumb:") << std::endl
+          << u("    h: ") << config->thumb_photo_size().h() << std::endl
+          << u("    w: ") << config->thumb_photo_size().w() << std::endl
+          << u("    resize: ")
+          << ((config->thumb_photo_size().resize() == twitter::resize::fit)
+                  ? u("fit")
+                  : u("crop"))
+          << std::endl
+          << u("  small:") << std::endl
+          << u("    h: ") << config->small_photo_size().h() << std::endl
+          << u("    w: ") << config->small_photo_size().w() << std::endl
+          << u("    resize: ")
+          << ((config->small_photo_size().resize() == twitter::resize::fit)
+                  ? u("fit")
+                  : u("crop"))
+          << std::endl
+          << u("  medium:") << std::endl
+          << u("    h: ") << config->medium_photo_size().h() << std::endl
+          << u("    w: ") << config->medium_photo_size().w() << std::endl
+          << u("    resize: ")
+          << ((config->medium_photo_size().resize() == twitter::resize::fit)
+                  ? u("fit")
+                  : u("crop"))
+          << std::endl
+          << u("  large:") << std::endl
+          << u("    h: ") << config->large_photo_size().h() << std::endl
+          << u("    w: ") << config->large_photo_size().w() << std::endl
+          << u("    resize: ")
+          << ((config->large_photo_size().resize() == twitter::resize::fit)
+                  ? u("fit")
+                  : u("crop"))
+          << std::endl
+          << u("non_username_paths:") << std::endl;
+
+    for (auto &e : config->non_username_paths())
+        ucout << u("                    ") << e << std::endl;
 }

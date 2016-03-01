@@ -210,15 +210,49 @@ twitter_client::get_help_configuration() const {
         config.photo_size_limit_ =
             root.at(u("photo_size_limit")).as_number().to_uint32();
 
-        // config.large_photo_size_ = ;
+        web::json::object photo_sizes = root.at(u("photo_sizes")).as_object();
 
-        // config.medium_photo_size_ = ;
+        web::json::object thumb = photo_sizes.at(u("thumb")).as_object();
+        config.thumb_photo_size_.h_ =
+            static_cast<std::uint16_t>(thumb.at(u("h")).as_integer());
+        config.thumb_photo_size_.w_ =
+            static_cast<std::uint16_t>(thumb.at(u("w")).as_integer());
+        config.thumb_photo_size_.resize_ =
+            (thumb.at(u("resize")).as_string() == u("fit")) ? resize::fit
+                                                            : resize::crop;
 
-        // config.small_photo_size_ = ;
+        web::json::object small = photo_sizes.at(u("small")).as_object();
+        config.small_photo_size_.h_ =
+            static_cast<std::uint16_t>(small.at(u("h")).as_integer());
+        config.small_photo_size_.w_ =
+            static_cast<std::uint16_t>(small.at(u("w")).as_integer());
+        config.small_photo_size_.resize_ =
+            (small.at(u("resize")).as_string() == u("fit")) ? resize::fit
+                                                            : resize::crop;
 
-        // config.thumb_photo_size_ = ;
+        web::json::object medium = photo_sizes.at(u("medium")).as_object();
+        config.medium_photo_size_.h_ =
+            static_cast<std::uint16_t>(medium.at(u("h")).as_integer());
+        config.medium_photo_size_.w_ =
+            static_cast<std::uint16_t>(medium.at(u("w")).as_integer());
+        config.medium_photo_size_.resize_ =
+            (medium.at(u("resize")).as_string() == u("fit")) ? resize::fit
+                                                             : resize::crop;
 
-        // config.non_username_paths_ = ;
+        web::json::object large = photo_sizes.at(u("large")).as_object();
+        config.large_photo_size_.h_ =
+            static_cast<std::uint16_t>(large.at(u("h")).as_integer());
+        config.large_photo_size_.w_ =
+            static_cast<std::uint16_t>(large.at(u("w")).as_integer());
+        config.large_photo_size_.resize_ =
+            (large.at(u("resize")).as_string() == u("fit")) ? resize::fit
+                                                            : resize::crop;
+
+        web::json::array non_username_paths =
+            root.at(u("non_username_paths")).as_array();
+        for (auto &e : non_username_paths) {
+            config.non_username_paths_.emplace_back(std::move(e.as_string()));
+        }
 
         return std::experimental::make_optional(config);
     } catch (const web::http::http_exception &e) {
