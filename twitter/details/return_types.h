@@ -64,6 +64,36 @@ enum class allowed : std::uint8_t { all, following, none };
 
 enum class resize : std::uint8_t { fit, crop };
 
+class connections {
+  private:
+    friend class twitter_client;
+
+    bool following_;
+    bool following_requested_;
+    bool followed_by_;
+    bool none_;
+    bool blocking_;
+    bool muting_;
+};
+
+class friendship {
+  public:
+    string_t name() const { return name_; }
+    string_t screen_name() const { return screen_name_; }
+    string_t id_str() const { return id_str_; }
+    std::uint64_t id() const { return id_; }
+    twitter::connections connections() const { return connections_; }
+
+  private:
+    friend class twitter_client;
+
+    string_t name_;
+    string_t screen_name_;
+    string_t id_str_;
+    std::uint64_t id_;
+    twitter::connections connections_;
+};
+
 class language {
   public:
     language(const string_t &code, const string_t &name, const string_t &status)

@@ -27,6 +27,7 @@
 ****************************************************************************/
 
 #include "twitter/client.h"
+#include <boost/lexical_cast.hpp>
 #include <cpprest/http_listener.h>
 #include <cpprest/json.h>
 
@@ -80,12 +81,97 @@ bool twitter_client::token_from_pin(const string_t &pin) {
     return true;
 }
 
+std::vector<friendship> twitter_client::get_friendships_lookup(
+    std::initializer_list<string_t> screen_names) {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    string_t query;
+    for (auto &e : screen_names)
+        query += (e + u(","));
+
+    query.pop_back();
+
+    try {
+        web::uri_builder builder(u("friendships/lookup.json"));
+        builder.append_query(u("screen_name"), query);
+
+        web::json::array root =
+            api.request(web::http::methods::GET, builder.to_string())
+                .get()
+                .extract_json()
+                .get()
+                .as_array();
+
+        std::vector<friendship> friendships;
+
+        friendship friendship;
+
+        for (auto &e : root) {
+            web::json::object &object = e.as_object();
+            friendship.name_ = object.at(u("name")).as_string();
+            friendship.screen_name_ = object.at(u("screen_name")).as_string();
+            friendship.id_ = object.at(u("id")).as_number().to_uint64();
+            friendship.id_str_ = object.at(u("id_str")).as_string();
+
+            web::json::array connections =
+                object.at(u("connections")).as_array();
+            for (auto &connection : connections) {
+                const string_t connection.as_string();
+                if( == u("none")) {
+
+                }
+            }
+
+                friendships.push_back(friendship);
+        }
+
+        return friendships;
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+    return std::vector<friendship>();
+}
+
+std::vector<friendship> twitter_client::get_friendships_lookup(
+    std::initializer_list<std::uint64_t> &user_ids) {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    string_t query;
+    for (auto &e : user_ids)
+        query += (boost::lexical_cast<string_t>(e) + u(","));
+
+    query.pop_back();
+
+    try {
+        web::uri_builder builder(u("friendships/lookup.json"));
+        builder.append_query(u("user_id"), query);
+
+        web::json::array root =
+            api.request(web::http::methods::GET, builder.to_string())
+                .get()
+                .extract_json()
+                .get()
+                .as_array();
+
+        std::vector<friendship> friendships;
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+    return std::vector<friendship>();
+}
+
 std::experimental::optional<account_settings>
 twitter_client::get_account_settings() const {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
-
-    account_settings settings;
 
     try {
         web::json::object root =
@@ -94,6 +180,8 @@ twitter_client::get_account_settings() const {
                 .extract_json()
                 .get()
                 .as_object();
+
+        account_settings settings;
 
         web::json::object time_zone = root.at(u("time_zone")).as_object();
         string_t name = time_zone[u("name")].as_string();
@@ -182,8 +270,6 @@ twitter_client::get_help_configuration() const {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
-    configuration config;
-
     try {
         web::json::object root =
             api.request(web::http::methods::GET, u("help/configuration.json"))
@@ -191,6 +277,8 @@ twitter_client::get_help_configuration() const {
                 .extract_json()
                 .get()
                 .as_object();
+
+        configuration config;
 
         config.dm_text_character_limit_ = static_cast<std::uint16_t>(
             root.at(u("dm_text_character_limit")).as_integer());
@@ -265,14 +353,8 @@ twitter_client::get_help_configuration() const {
 }
 
 std::vector<language> twitter_client::get_help_languages() const {
-    std::vector<language> languages;
-
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
-
-    string_t code;
-    string_t name;
-    string_t status;
 
     try {
         web::json::array root =
@@ -282,11 +364,14 @@ std::vector<language> twitter_client::get_help_languages() const {
                 .get()
                 .as_array();
 
+        std::vector<language> languages;
+
         for (auto &e : root) {
-            web::json::object object = e.as_object();
-            code = object.at(u("code")).as_string();
-            name = object.at(u("name")).as_string();
-            status = object.at(u("status")).as_string();
+            web::json::object &object = e.as_object();
+            const string_t &code = object.at(u("code")).as_string();
+            const string_t &name = object.at(u("name")).as_string();
+            const string_t &status = object.at(u("status")).as_string();
+
             languages.emplace_back(code, name, status);
         }
 

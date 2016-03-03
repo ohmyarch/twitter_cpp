@@ -112,7 +112,20 @@ class twitter_client {
     string_t build_authorization_uri();
     bool token_from_pin(const string_t &pin);
 
+    void get_friendships_show(const string_t &source_screen_name,
+                              const string_t &target_screen_name);
+    void get_friendships_show(const std::uint64_t &source_user_id,
+                              const string_t &target_screen_name);
+    void get_friendships_show(const string_t &source_screen_name,
+                              const std::uint64_t &target_user_id);
+    void get_friendships_show(const std::uint64_t &source_user_id,
+                              const std::uint64_t &target_user_id);
+    std::vector<friendship> get_friendships_lookup(std::initializer_list<string_t> screen_names);
+    std::vector<friendship> get_friendships_lookup(std::initializer_list<std::uint64_t> &user_ids);
+    //void get_friendships_lookup(std::initializer_list<user> users);
+
     std::experimental::optional<account_settings> get_account_settings() const;
+
     std::vector<language> get_help_languages() const;
     string_t get_help_privacy() const;
     string_t get_help_tos() const;
