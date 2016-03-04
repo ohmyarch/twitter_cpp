@@ -88,13 +88,15 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
 
     string_t query;
     for (auto &e : screen_names)
-        query += (e + u(","));
+        query += (e + u("%2C"));
 
+    query.pop_back();
+    query.pop_back();
     query.pop_back();
 
     try {
         web::uri_builder builder(u("friendships/lookup.json"));
-        builder.append_query(u("screen_name"), query);
+        builder.append_query(u("screen_name"), query, false);
 
         web::json::array root =
             api.request(web::http::methods::GET, builder.to_string())
@@ -117,13 +119,25 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
             web::json::array connections =
                 object.at(u("connections")).as_array();
             for (auto &connection : connections) {
-                const string_t connection.as_string();
-                if( == u("none")) {
+                const string_t connection_type = connection.as_string();
+                if (connection_type == u("none")) {
+                    friendship.connections_.none_ = true;
 
+                    break;
+                } else if (connection_type == u("following")) {
+                    friendship.connections_.following_ = true;
+                } else if (connection_type == u("following_requested")) {
+                    friendship.connections_.following_requested_ = true;
+                } else if (connection_type == u("followed_by")) {
+                    friendship.connections_.followed_by_ = true;
+                } else if (connection_type == u("blocking")) {
+                    friendship.connections_.blocking_ = true;
+                } else if (connection_type == u("muting")) {
+                    friendship.connections_.muting_ = true;
                 }
             }
 
-                friendships.push_back(friendship);
+            friendships.push_back(friendship);
         }
 
         return friendships;
@@ -143,13 +157,15 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
 
     string_t query;
     for (auto &e : user_ids)
-        query += (boost::lexical_cast<string_t>(e) + u(","));
+        query += (boost::lexical_cast<string_t>(e) + u("%2C"));
 
+    query.pop_back();
+    query.pop_back();
     query.pop_back();
 
     try {
-        web::uri_builder builder(u("friendships/lookup.json"));
-        builder.append_query(u("user_id"), query);
+        web::uri_builder builder(u("/friendships/lookup.json"));
+        builder.append_query(u("user_id"), query, false);
 
         web::json::array root =
             api.request(web::http::methods::GET, builder.to_string())

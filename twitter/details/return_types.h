@@ -65,15 +65,23 @@ enum class allowed : std::uint8_t { all, following, none };
 enum class resize : std::uint8_t { fit, crop };
 
 class connections {
+  public:
+    bool is_following() const { return following_; }
+    bool is_following_requested() const { return following_requested_; }
+    bool is_followed_by() const { return followed_by_; }
+    bool is_none() const { return none_; }
+    bool is_blocking() const { return blocking_; }
+    bool is_muting() const { return muting_; }
+
   private:
     friend class twitter_client;
 
-    bool following_;
-    bool following_requested_;
-    bool followed_by_;
-    bool none_;
-    bool blocking_;
-    bool muting_;
+    bool following_ = false;
+    bool following_requested_ = false;
+    bool followed_by_ = false;
+    bool none_ = false;
+    bool blocking_ = false;
+    bool muting_ = false;
 };
 
 class friendship {
