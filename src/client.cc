@@ -88,7 +88,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
 
     string_t query;
     for (auto &e : screen_names)
-        query += (e + u("%2C"));
+        query += (e + web::uri::encode_data_string(u(",")));
 
     query.pop_back();
     query.pop_back();
