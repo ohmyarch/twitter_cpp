@@ -67,9 +67,9 @@ int main(int argc, char *argv[])
             return u("none");
     };
 
-    int i;
+    std::int8_t i;
     auto hour_to_string = [&i](const twitter::hour hour) {
-        if ((i = static_cast<int>(hour)) == -1)
+        if ((i = static_cast<std::int8_t>(hour)) == -1)
             return twitter::string_t(u("null"));
         else
             return boost::lexical_cast<twitter::string_t>(i);

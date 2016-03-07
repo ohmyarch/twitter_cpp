@@ -53,8 +53,8 @@ enum class init_flag : std::uint8_t { error, normal, show_help };
 inline bool open_browser(const twitter::string_t &uri) {
 #if defined(_WIN32) && !defined(__cplusplus_winrt)
     // NOTE: Windows desktop only.
-    auto r = ShellExecuteA(NULL, "open", twitter::utf16_to_utf8(uri), NULL,
-                           NULL, SW_SHOWNORMAL);
+    auto r = ShellExecuteA(NULL, "open", twitter::utf16_to_utf8(uri).c_str(),
+                           NULL, NULL, SW_SHOWNORMAL);
 
     return true;
 #elif defined(__APPLE__)

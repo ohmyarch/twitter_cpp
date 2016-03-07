@@ -39,8 +39,8 @@ namespace twitter {
 class token {
   public:
     token();
-    token(const string_t &access_token, const string_t &secret)
-        : access_token_(access_token), secret_(secret) {}
+    token(string_t access_token, string_t secret)
+        : access_token_(std::move(access_token)), secret_(std::move(secret)) {}
 
     void set_access_token(const string_t &access_token) {
         access_token_ = access_token;
@@ -55,25 +55,26 @@ class token {
     }
 
   private:
+    friend class twitter_client;
+
     string_t access_token_;
     string_t secret_;
 };
 
 class twitter_client {
   public:
-    twitter_client(const string_t &consumer_key,
-                   const string_t &consumer_secret,
-                   const string_t &callback_uri);
+    twitter_client(string_t consumer_key, string_t consumer_secret,
+                   string_t callback_uri);
 
-    void set_token(const token &token) {
+    void set_token(token token) {
         oauth1_config_.set_token(web::http::oauth1::experimental::oauth1_token(
-            token.access_token(), token.secret()));
+            std::move(token.access_token_), std::move(token.secret_)));
 
         http_client_config_.set_oauth1(oauth1_config_);
     }
-    bool set_proxy(const string_t &proxy_uri) {
+    bool set_proxy(string_t proxy_uri) {
         try {
-            web::web_proxy proxy(proxy_uri);
+            web::web_proxy proxy(std::move(proxy_uri));
 
             oauth1_config_.set_proxy(proxy);
             http_client_config_.set_proxy(proxy);
@@ -85,14 +86,14 @@ class twitter_client {
             return false;
         }
     }
-    void set_consumer_key(const string_t &consumer_key) {
-        oauth1_config_.set_consumer_key(consumer_key);
+    void set_consumer_key(string_t consumer_key) {
+        oauth1_config_.set_consumer_key(std::move(consumer_key));
     }
     void set_consumer_secret(const string_t &consumer_secret) {
-        oauth1_config_.set_consumer_secret(consumer_secret);
+        oauth1_config_.set_consumer_secret(std::move(consumer_secret));
     }
     void set_callback_uri(const string_t &callback_uri) {
-        oauth1_config_.set_callback_uri(callback_uri);
+        oauth1_config_.set_callback_uri(std::move(callback_uri));
     }
 
     string_t consumer_key() const { return oauth1_config_.consumer_key(); }
@@ -101,7 +102,7 @@ class twitter_client {
     }
     string_t callback_uri() const { return oauth1_config_.callback_uri(); }
     twitter::token token() const {
-        web::http::oauth1::experimental::oauth1_token oauth1_token =
+        const web::http::oauth1::experimental::oauth1_token &oauth1_token =
             oauth1_config_.token();
 
         return twitter::token(oauth1_token.access_token(),
@@ -110,19 +111,21 @@ class twitter_client {
 
     // void listen_for_code();
     string_t build_authorization_uri();
-    bool token_from_pin(const string_t &pin);
+    bool token_from_pin(string_t pin);
 
-    void get_friendships_show(const string_t &source_screen_name,
-                              const string_t &target_screen_name);
-    void get_friendships_show(const std::uint64_t &source_user_id,
-                              const string_t &target_screen_name);
-    void get_friendships_show(const string_t &source_screen_name,
-                              const std::uint64_t &target_user_id);
-    void get_friendships_show(const std::uint64_t &source_user_id,
-                              const std::uint64_t &target_user_id);
-    std::vector<friendship> get_friendships_lookup(std::initializer_list<string_t> screen_names);
-    std::vector<friendship> get_friendships_lookup(std::initializer_list<std::uint64_t> &user_ids);
-    //void get_friendships_lookup(std::initializer_list<user> users);
+    // void get_friendships_show(const string_t &source_screen_name,
+    // const string_t &target_screen_name);
+    // void get_friendships_show(const std::uint64_t &source_user_id,
+    // const string_t &target_screen_name);
+    // void get_friendships_show(const string_t &source_screen_name,
+    // const std::uint64_t &target_user_id);
+    // void get_friendships_show(const std::uint64_t &source_user_id,
+    // const std::uint64_t &target_user_id);
+    std::vector<friendship>
+    get_friendships_lookup(const std::vector<string_t> &screen_names);
+    std::vector<friendship>
+    get_friendships_lookup(const std::vector<std::uint64_t> &user_ids);
+    // void get_friendships_lookup(std::vector<user> users);
 
     std::experimental::optional<account_settings> get_account_settings() const;
 

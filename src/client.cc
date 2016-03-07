@@ -32,14 +32,14 @@
 #include <cpprest/json.h>
 
 namespace twitter {
-twitter_client::twitter_client(const string_t &consumer_key,
-                               const string_t &consumer_secret,
-                               const string_t &callback_uri)
+twitter_client::twitter_client(string_t consumer_key, string_t consumer_secret,
+                               string_t callback_uri)
     : oauth1_config_(
-          consumer_key, consumer_secret,
+          std::move(consumer_key), std::move(consumer_secret),
           u("https://api.twitter.com/oauth/request_token"),
           u("https://api.twitter.com/oauth/authorize"),
-          u("https://api.twitter.com/oauth/access_token"), callback_uri,
+          u("https://api.twitter.com/oauth/access_token"),
+          std::move(callback_uri),
           web::http::oauth1::experimental::oauth1_methods::hmac_sha1) {}
 
 /* void twitter_client::listen_for_code() {
@@ -47,18 +47,15 @@ twitter_client::twitter_client(const string_t &consumer_key,
         std::make_unique<web::http::experimental::listener::http_listener>(
             web::http::uri(oauth1_config_.callback_uri()));
     listener->support([this](web::http::http_request request) {
-        string_t s = request.request_uri().path();
-        string_t ss = request.request_uri().query();
+        request.request_uri().path();
     });
     listener->open().wait();
 } */
 
 string_t twitter_client::build_authorization_uri() {
-    auto auth_uri_task = oauth1_config_.build_authorization_uri();
+    auto &&auth_uri_task = oauth1_config_.build_authorization_uri();
     try {
-        string_t auth_uri = auth_uri_task.get();
-
-        return auth_uri;
+        return auth_uri_task.get();
     } catch (const web::http::oauth1::experimental::oauth1_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
 
@@ -66,10 +63,9 @@ string_t twitter_client::build_authorization_uri() {
     }
 }
 
-bool twitter_client::token_from_pin(const string_t &pin) {
-    auto token_task = oauth1_config_.token_from_verifier(pin);
+bool twitter_client::token_from_pin(string_t pin) {
     try {
-        token_task.get();
+        oauth1_config_.token_from_verifier(pin).get();
     } catch (const web::http::oauth1::experimental::oauth1_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
 
@@ -81,8 +77,8 @@ bool twitter_client::token_from_pin(const string_t &pin) {
     return true;
 }
 
-std::vector<friendship> twitter_client::get_friendships_lookup(
-    std::initializer_list<string_t> screen_names) {
+std::vector<friendship>
+twitter_client::get_friendships_lookup(std::vector<string_t> screen_names) {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
@@ -90,15 +86,13 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
     for (auto &e : screen_names)
         query += (e + web::uri::encode_data_string(u(",")));
 
-    query.pop_back();
-    query.pop_back();
-    query.pop_back();
+    query.resize(query.size() - 3);
 
     try {
         web::uri_builder builder(u("friendships/lookup.json"));
         builder.append_query(u("screen_name"), query, false);
 
-        web::json::array root =
+        web::json::array &root =
             api.request(web::http::methods::GET, builder.to_string())
                 .get()
                 .extract_json()
@@ -150,8 +144,8 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
     return std::vector<friendship>();
 }
 
-std::vector<friendship> twitter_client::get_friendships_lookup(
-    std::initializer_list<std::uint64_t> &user_ids) {
+std::vector<friendship>
+twitter_client::get_friendships_lookup(std::vector<std::uint64_t> user_ids) {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
