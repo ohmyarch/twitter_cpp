@@ -41,17 +41,49 @@ class token {
     token();
     token(string_t access_token, string_t secret)
         : access_token_(std::move(access_token)), secret_(std::move(secret)) {}
+    token(token &&other) noexcept
+        : access_token_(std::move(other.access_token_)),
+          secret_(std::move(other.secret_)) {}
 
     void set_access_token(const string_t &access_token) {
         access_token_ = access_token;
     }
+    void set_access_token(std::string &&access_token) {
+        access_token_ = std::move(access_token);
+    }
     void set_secret(const string_t &secret) { secret_ = secret; }
+    void set_secret(string_t &&secret) { secret_ = std::move(secret); }
 
     string_t access_token() const { return access_token_; }
     string_t secret() const { return secret_; }
 
-    bool is_valid_access_token() {
+    bool is_valid_access_token() const {
         return !(access_token_.empty() || secret_.empty());
+    }
+
+    token &operator=(const token &other) {
+        if (&other != this) {
+            access_token_ = other.access_token_;
+            secret_ = other.secret_;
+        }
+
+        return *this;
+    }
+    token &operator=(token &&other) noexcept {
+        if (&other != this) {
+            access_token_ = std::move(other.access_token_);
+            secret_ = std::move(other.secret_);
+        }
+
+        return *this;
+    }
+    bool operator==(const token &other) const {
+        return (access_token_ == other.access_token_) &&
+               (secret_ == other.secret_);
+    }
+    bool operator!=(const token &other) const {
+        return (access_token_ != other.access_token_) ||
+               (secret_ != other.secret_);
     }
 
   private:
@@ -122,9 +154,9 @@ class twitter_client {
     // void get_friendships_show(const std::uint64_t &source_user_id,
     // const std::uint64_t &target_user_id);
     std::vector<friendship>
-    get_friendships_lookup(const std::vector<string_t> &screen_names);
+    get_friendships_lookup(std::initializer_list<string_t> screen_names);
     std::vector<friendship>
-    get_friendships_lookup(const std::vector<std::uint64_t> &user_ids);
+    get_friendships_lookup(std::initializer_list<std::uint64_t> user_ids);
     // void get_friendships_lookup(std::vector<user> users);
 
     std::experimental::optional<account_settings> get_account_settings() const;

@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(twitter_cpp)
 
-set(CMAKE_CXX_STANDARD 14)
-
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -47,6 +45,20 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++14")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fno-strict-aliasing")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  message("-- Setting gcc options")
+
+  set(WARNINGS "-Wall -Wextra -Wunused-parameter -Wcast-align -Wcast-qual -Wconversion -Wformat=2 -Winit-self -Winvalid-pch -Wmissing-format-attribute -Wmissing-include-dirs -Wpacked -Wredundant-decls -Wunreachable-code")
+
+  set(LD_FLAGS "${LD_FLAGS} -Wl,-z,defs")
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -fno-strict-aliasing")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  message("-- Setting msvc options")
+  set(WARNINGS)
+else()
+  message("-- Unknown compiler, success is doubtful.")
+  message("CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)

@@ -78,7 +78,7 @@ bool twitter_client::token_from_pin(string_t pin) {
 }
 
 std::vector<friendship>
-twitter_client::get_friendships_lookup(std::vector<string_t> screen_names) {
+twitter_client::get_friendships_lookup(std::initializer_list<string_t> screen_names) {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
@@ -145,7 +145,7 @@ twitter_client::get_friendships_lookup(std::vector<string_t> screen_names) {
 }
 
 std::vector<friendship>
-twitter_client::get_friendships_lookup(std::vector<std::uint64_t> user_ids) {
+twitter_client::get_friendships_lookup(std::initializer_list<std::uint64_t> user_ids) {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
