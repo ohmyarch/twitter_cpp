@@ -54,14 +54,7 @@ int main(int argc, char *argv[])
     if (!client) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
-    }
-
-    auto config = client->get_help_configuration();
-    if (!config) {
-        std::cout << "Failed." << std::endl;
-
-        return 0;
+        return 1;
     }
 
     twitter::string_t source_screen_name;

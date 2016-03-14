@@ -55,14 +55,14 @@ int main(int argc, char *argv[])
     if (!client) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
-    twitter::string_t &&tos = client->get_help_tos();
+    twitter::string_t tos = client->get_help_tos();
     if (tos.empty()) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
     boost::replace_all(tos, u("&nbsp;"), u(" "));

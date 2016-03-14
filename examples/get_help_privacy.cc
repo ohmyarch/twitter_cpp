@@ -54,14 +54,14 @@ int main(int argc, char *argv[])
     if (!client) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
-    twitter::string_t &&privacy = client->get_help_privacy();
+    twitter::string_t privacy = client->get_help_privacy();
     if (privacy.empty()) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
     boost::replace_all(privacy, u("&nbsp;"), u(" "));

@@ -54,22 +54,36 @@ int main(int argc, char *argv[])
     if (!client) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
-    auto friendships =
-        client->get_friendships_lookup({u("kassol_zx"), u("iorminafellows")});
+    auto friendships = client->get_friendships_lookup(
+        std::vector<twitter::string_t>{u("kassol_zx"), u("iorminafellows")});
     if (friendships.empty()) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
     std::size_t index = 0;
     std::size_t size = friendships.size();
 
     auto print_connections = [](const twitter::connections &connections) {
-        // std::cout << std::endl;
+        if (connections.is_none()) {
+            std::cout << "none" << std::endl;
+
+            return;
+        }
+        if (connections.is_following())
+            std::cout << "following" << std::endl;
+        if (connections.is_following_requested())
+            std::cout << "following_requested" << std::endl;
+        if (connections.is_followed_by())
+            std::cout << "followed_by" << std::endl;
+        if (connections.is_muting())
+            std::cout << "muting" << std::endl;
+        if (connections.is_blocking())
+            std::cout << "blocking" << std::endl;
     };
 
     for (auto &e : friendships) {
@@ -81,6 +95,7 @@ int main(int argc, char *argv[])
 
         print_connections(e.connections());
 
-        std::cout << std::endl;
+        if (++index < size)
+            std::cout << std::endl;
     }
 }

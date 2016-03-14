@@ -60,11 +60,12 @@ auth(const twitter::string_t &proxy_uri) {
         }
     }
 
-    twitter::token token(access_token, access_token_secret);
+    twitter::token token(std::move(access_token),
+                         std::move(access_token_secret));
     if (token.is_valid_access_token()) {
-        client.set_token(token);
+        client.set_token(std::move(token));
     } else {
-        twitter::string_t &&auth_uri = client.build_authorization_uri();
+        twitter::string_t auth_uri = client.build_authorization_uri();
 
         if (auth_uri.empty())
             return std::experimental::optional<twitter::twitter_client>();
@@ -76,7 +77,7 @@ auth(const twitter::string_t &proxy_uri) {
         twitter::string_t pin;
         ucin >> pin;
 
-        if (!client.token_from_pin(pin))
+        if (!client.token_from_pin(std::move(pin)))
             return std::experimental::optional<twitter::twitter_client>();
 
         token = client.token();
@@ -134,7 +135,6 @@ init(const int argc, char **argv, const std::string &application_name) {
                                   map["proxy-uri"].as<twitter::string_t>());
         } else {
             return std::make_pair(init_flag::normal, u(""));
-            ;
         }
     } catch (const std::exception &e) {
         std::cout << e.what() << std::endl

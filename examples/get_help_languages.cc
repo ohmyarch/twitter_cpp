@@ -54,14 +54,14 @@ int main(int argc, char *argv[])
     if (!client) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
-    std::vector<twitter::language> &&languages = client->get_help_languages();
+    std::vector<twitter::language> languages = client->get_help_languages();
     if (languages.empty()) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
     std::cout << "Languages supported by Twitter:" << std::endl << std::endl;

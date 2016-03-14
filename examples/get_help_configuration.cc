@@ -54,14 +54,14 @@ int main(int argc, char *argv[])
     if (!client) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
     auto config = client->get_help_configuration();
     if (!config) {
         std::cout << "Failed." << std::endl;
 
-        return 0;
+        return 1;
     }
 
     ucout << u("The current configuration used by Twitter:") << std::endl
@@ -111,6 +111,8 @@ int main(int argc, char *argv[])
           << std::endl
           << u("non_username_paths:") << std::endl;
 
-    for (auto &e : config->non_username_paths())
+    const std::vector<std::string> &non_username_paths =
+        config->non_username_paths();
+    for (auto &e : non_username_paths)
         ucout << u("                    ") << e << std::endl;
 }

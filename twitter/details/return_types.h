@@ -86,11 +86,18 @@ class connections {
 
 class friendship {
   public:
-    string_t name() const { return name_; }
-    string_t screen_name() const { return screen_name_; }
-    string_t id_str() const { return id_str_; }
+    friendship() {}
+    friendship(friendship &&other)
+        : name_(std::move(other.screen_name_)),
+          screen_name_(std::move(other.screen_name_)),
+          id_str_(std::move(other.id_str_)), id_(other.id_),
+          connections_(other.connections_) {}
+
+    const string_t &name() const { return name_; }
+    const string_t &screen_name() const { return screen_name_; }
+    const string_t &id_str() const { return id_str_; }
     std::uint64_t id() const { return id_; }
-    twitter::connections connections() const { return connections_; }
+    const twitter::connections &connections() const { return connections_; }
 
   private:
     friend class twitter_client;
@@ -107,13 +114,13 @@ class language {
     language(const string_t &code, const string_t &name, const string_t &status)
         : code_(code), name_(name), status_(status) {}
 
-    void set_code(const string_t &code) { code_ = code; }
-    void set_name(const string_t &name) { name_ = name; }
-    void set_status(const string_t &status) { status_ = status; }
+    // void set_code(const string_t &code) { code_ = code; }
+    // void set_name(const string_t &name) { name_ = name; }
+    // void set_status(const string_t &status) { status_ = status; }
 
-    string_t code() const { return code_; }
-    string_t name() const { return name_; }
-    string_t status() const { return status_; }
+    const string_t &code() const { return code_; }
+    const string_t &name() const { return name_; }
+    const string_t &status() const { return status_; }
 
   private:
     string_t code_;
@@ -124,21 +131,29 @@ class language {
 class time_zone {
   public:
     time_zone(){};
+    time_zone(time_zone &&other)
+        : utc_offset_(other.utc_offset_), name_(std::move(other.name_)),
+          tzinfo_name_(std::move(other.tzinfo_name_)) {}
     time_zone(const string_t &name, const int utc_offset,
               const string_t &tzinfo_name)
         : utc_offset_(utc_offset), name_(name), tzinfo_name_(tzinfo_name) {}
+    time_zone(string_t &&name, const int utc_offset, string_t &&tzinfo_name)
+        : utc_offset_(utc_offset), name_(std::move(name)),
+          tzinfo_name_(std::move(tzinfo_name)) {}
 
-    void set_utc_offset(const int utc_offset) { utc_offset_ = utc_offset; }
-    void set_name(const string_t &name) { name_ = name; }
-    void set_tzinfo_name(const string_t &tzinfo_name) {
-        tzinfo_name_ = tzinfo_name;
-    }
+    // void set_utc_offset(const int utc_offset) { utc_offset_ = utc_offset; }
+    // void set_name(const string_t &name) { name_ = name; }
+    // void set_tzinfo_name(const string_t &tzinfo_name) {
+    // tzinfo_name_ = tzinfo_name;
+    // }
 
     int utc_offset() const { return utc_offset_; }
-    string_t name() const { return name_; }
-    string_t tzinfo_name() const { return tzinfo_name_; }
+    const string_t &name() const { return name_; }
+    const string_t &tzinfo_name() const { return tzinfo_name_; }
 
   private:
+    friend class twitter_client;
+
     int utc_offset_;
     string_t name_;
     string_t tzinfo_name_;
@@ -147,7 +162,7 @@ class time_zone {
 class sleep_time {
   public:
     sleep_time() {}
-    sleep_time(const hour start_time, const hour end_time) {
+    sleep_time(const hour &start_time, const hour &end_time) {
         if ((start_time != hour::null) && (end_time != hour::null)) {
             start_time_ = start_time;
             end_time_ = end_time;
@@ -160,6 +175,8 @@ class sleep_time {
     hour end_time() const { return end_time_; }
 
   private:
+    friend class twitter_client;
+
     bool enabled_ = false;
     hour start_time_ = hour::null;
     hour end_time_ = hour::null;
@@ -167,47 +184,66 @@ class sleep_time {
 
 class account_settings {
   public:
-    account_settings(){};
+    account_settings() {}
+    account_settings(account_settings &&other)
+        : protected_(other.protected_), geo_enabled_(other.geo_enabled_),
+          always_use_https_(other.always_use_https_),
+          discoverable_by_email_(other.discoverable_by_email_),
+          discoverable_by_mobile_phone_(other.discoverable_by_mobile_phone_),
+          use_cookie_personalization_(other.use_cookie_personalization_),
+          display_sensitive_media_(other.display_sensitive_media_),
+          smart_mute_(other.smart_mute_),
+          allow_contributor_request_(other.allow_contributor_request_),
+          allow_dms_from_(other.allow_dms_from_),
+          allow_dm_groups_from_(other.allow_dm_groups_from_),
+          time_zone_(std::move(other.time_zone_)),
+          sleep_time_(other.sleep_time_),
+          screen_name_(std::move(other.screen_name_)),
+          language_(std::move(other.language_)) {}
 
-    void set_protected(const bool is_protected) { protected_ = is_protected; }
-    void set_geo_enabled(const bool is_geo_enabled) {
-        geo_enabled_ = is_geo_enabled;
-    }
-    void set_always_use_https(const bool is_always_use_https) {
-        always_use_https_ = is_always_use_https;
-    }
-    void set_discoverable_by_email(const bool is_discoverable_by_email) {
-        discoverable_by_email_ = is_discoverable_by_email;
-    }
-    void set_discoverable_by_mobile_phone(
-        const bool is_discoverable_by_mobile_phone) {
-        discoverable_by_mobile_phone_ = is_discoverable_by_mobile_phone;
-    }
-    void
-    set_use_cookie_personalization(const bool is_use_cookie_personalization) {
-        use_cookie_personalization_ = is_use_cookie_personalization;
-    }
-    void set_display_sensitive_media(const bool is_display_sensitive_media) {
-        display_sensitive_media_ = is_display_sensitive_media;
-    }
-    void set_smart_mute(const bool is_smart_mute) {
-        smart_mute_ = is_smart_mute;
-    }
-    void set_allow_contributor_request(const allowed who) {
-        allow_contributor_request_ = who;
-    }
-    void set_allow_dms_from(const allowed who) { allow_dms_from_ = who; }
-    void set_allow_dm_groups_from(const allowed who) {
-        allow_dm_groups_from_ = who;
-    }
-    void set_time_zone(const time_zone &time_zone) { time_zone_ = time_zone; }
-    void set_sleep_time(const sleep_time sleep_time) {
-        sleep_time_ = sleep_time;
-    }
-    void set_screen_name(const string_t &screen_name) {
-        screen_name_ = screen_name;
-    }
-    void set_language(const string_t &language) { language_ = language; }
+    //     void set_protected(const bool is_protected) { protected_ =
+    //     is_protected; }
+    //     void set_geo_enabled(const bool is_geo_enabled) {
+    //         geo_enabled_ = is_geo_enabled;
+    //     }
+    //     void set_always_use_https(const bool is_always_use_https) {
+    //         always_use_https_ = is_always_use_https;
+    //     }
+    //     void set_discoverable_by_email(const bool is_discoverable_by_email) {
+    //         discoverable_by_email_ = is_discoverable_by_email;
+    //     }
+    //     void set_discoverable_by_mobile_phone(
+    //         const bool is_discoverable_by_mobile_phone) {
+    //         discoverable_by_mobile_phone_ = is_discoverable_by_mobile_phone;
+    //     }
+    //     void
+    //     set_use_cookie_personalization(const bool
+    //     is_use_cookie_personalization) {
+    //         use_cookie_personalization_ = is_use_cookie_personalization;
+    //     }
+    //     void set_display_sensitive_media(const bool
+    //     is_display_sensitive_media) {
+    //         display_sensitive_media_ = is_display_sensitive_media;
+    //     }
+    //     void set_smart_mute(const bool is_smart_mute) {
+    //         smart_mute_ = is_smart_mute;
+    //     }
+    //     void set_allow_contributor_request(const allowed who) {
+    //         allow_contributor_request_ = who;
+    //     }
+    //     void set_allow_dms_from(const allowed who) { allow_dms_from_ = who; }
+    //     void set_allow_dm_groups_from(const allowed who) {
+    //         allow_dm_groups_from_ = who;
+    //     }
+    //     void set_time_zone(const time_zone &time_zone) { time_zone_ =
+    //     time_zone; }
+    //     void set_sleep_time(const sleep_time sleep_time) {
+    //         sleep_time_ = sleep_time;
+    //     }
+    //     void set_screen_name(const string_t &screen_name) {
+    //         screen_name_ = screen_name;
+    //     }
+    //     void set_language(const string_t &language) { language_ = language; }
 
     bool is_protected() const { return protected_; }
     bool is_geo_enabled() const { return geo_enabled_; }
@@ -226,12 +262,14 @@ class account_settings {
     }
     allowed allow_dms_from() const { return allow_dms_from_; }
     allowed allow_dm_groups_from() const { return allow_dm_groups_from_; }
-    twitter::time_zone time_zone() const { return time_zone_; }
-    twitter::sleep_time sleep_time() const { return sleep_time_; }
-    string_t screen_name() const { return screen_name_; }
-    string_t language() const { return language_; }
+    const twitter::time_zone &time_zone() const { return time_zone_; }
+    const twitter::sleep_time &sleep_time() const { return sleep_time_; }
+    const string_t &screen_name() const { return screen_name_; }
+    const string_t &language() const { return language_; }
 
   private:
+    friend class twitter_client;
+
     bool protected_;
     bool geo_enabled_;
     bool always_use_https_;
@@ -267,6 +305,20 @@ class photo_size {
 
 class configuration {
   public:
+    configuration() {}
+    configuration(configuration &&other) noexcept
+        : dm_text_character_limit_(other.dm_text_character_limit_),
+          characters_reserved_per_media_(other.characters_reserved_per_media_),
+          max_media_per_upload_(other.max_media_per_upload_),
+          short_url_length_(other.short_url_length_),
+          short_url_length_https_(other.short_url_length_https_),
+          photo_size_limit_(other.photo_size_limit_),
+          thumb_photo_size_(other.thumb_photo_size_),
+          small_photo_size_(other.small_photo_size_),
+          medium_photo_size_(other.medium_photo_size_),
+          large_photo_size_(other.large_photo_size_),
+          non_username_paths_(std::move(other.non_username_paths_)) {}
+
     std::uint16_t dm_text_character_limit() const {
         return dm_text_character_limit_;
     }
@@ -279,11 +331,11 @@ class configuration {
         return short_url_length_https_;
     }
     std::uint32_t photo_size_limit() const { return photo_size_limit_; }
-    photo_size thumb_photo_size() const { return thumb_photo_size_; }
-    photo_size small_photo_size() const { return small_photo_size_; }
-    photo_size medium_photo_size() const { return medium_photo_size_; }
-    photo_size large_photo_size() const { return large_photo_size_; }
-    std::vector<std::string> non_username_paths() const {
+    const photo_size &thumb_photo_size() const { return thumb_photo_size_; }
+    const photo_size &small_photo_size() const { return small_photo_size_; }
+    const photo_size &medium_photo_size() const { return medium_photo_size_; }
+    const photo_size &large_photo_size() const { return large_photo_size_; }
+    const std::vector<std::string> &non_username_paths() const {
         return non_username_paths_;
     }
 

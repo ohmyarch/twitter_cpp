@@ -56,19 +56,19 @@ inline bool open_browser(const twitter::string_t &uri) {
     auto r = ShellExecuteA(NULL, "open", twitter::utf16_to_utf8(uri).c_str(),
                            NULL, NULL, SW_SHOWNORMAL);
 
-    return true;
+    return true; // FIXME
 #elif defined(__APPLE__)
     // NOTE: OS X only.
     std::string browser_cmd("open \"" + uri + "\"");
     std::system(browser_cmd.c_str());
 
-    return true;
+    return true; // FIXME
 #else
     // NOTE: Linux/X11 only.
     std::string browser_cmd("xdg-open \"" + uri + "\"");
     std::system(browser_cmd.c_str());
 
-    return true;
+    return true; // FIXME
 #endif
 }
 
