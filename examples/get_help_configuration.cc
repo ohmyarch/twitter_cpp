@@ -111,8 +111,6 @@ int main(int argc, char *argv[])
           << std::endl
           << u("non_username_paths:") << std::endl;
 
-    const std::vector<std::string> &non_username_paths =
-        config->non_username_paths();
-    for (auto &e : non_username_paths)
+    for (auto &e : config->non_username_paths())
         ucout << u("                    ") << e << std::endl;
 }

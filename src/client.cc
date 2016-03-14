@@ -118,7 +118,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
         web::uri_builder builder(u("friendships/lookup.json"));
         builder.append_query(u("screen_name"), query, false);
 
-        web::json::array &root =
+        const web::json::array &root =
             api.request(web::http::methods::GET, builder.to_string())
                 .get()
                 .extract_json()
@@ -129,14 +129,14 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
 
         friendship friendship;
 
-        for (auto &e : root) {
-            web::json::object &object = e.as_object();
+        for (const auto &e : root) {
+            const web::json::object &object = e.as_object();
             friendship.name_ = object.at(u("name")).as_string();
             friendship.screen_name_ = object.at(u("screen_name")).as_string();
             friendship.id_ = object.at(u("id")).as_number().to_uint64();
             friendship.id_str_ = object.at(u("id_str")).as_string();
 
-            web::json::array &connections =
+            const web::json::array &connections =
                 object.at(u("connections")).as_array();
             for (auto &connection : connections) {
                 const string_t &connection_type = connection.as_string();

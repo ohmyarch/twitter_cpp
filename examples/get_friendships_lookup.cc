@@ -70,20 +70,20 @@ int main(int argc, char *argv[])
 
     auto print_connections = [](const twitter::connections &connections) {
         if (connections.is_none()) {
-            std::cout << "none" << std::endl;
+            std::cout << "  none" << std::endl;
 
             return;
         }
         if (connections.is_following())
-            std::cout << "following" << std::endl;
+            std::cout << "  following" << std::endl;
         if (connections.is_following_requested())
-            std::cout << "following_requested" << std::endl;
+            std::cout << "  following_requested" << std::endl;
         if (connections.is_followed_by())
-            std::cout << "followed_by" << std::endl;
+            std::cout << "  followed_by" << std::endl;
         if (connections.is_muting())
-            std::cout << "muting" << std::endl;
+            std::cout << "  muting" << std::endl;
         if (connections.is_blocking())
-            std::cout << "blocking" << std::endl;
+            std::cout << "  blocking" << std::endl;
     };
 
     for (auto &e : friendships) {
