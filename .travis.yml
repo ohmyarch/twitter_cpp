@@ -1,0 +1,14 @@
+language: cpp
+
+compiler:
+  - clang
+  - gcc
+
+os: osx
+
+before_install:
+  - brew update
+  - brew install cpprestsdk
+
+script:
+  - cmake . -DCMAKE_BUILD_TYPE=Release && make -j4
