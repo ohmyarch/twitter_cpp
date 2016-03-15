@@ -57,8 +57,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    auto friendships = client->get_friendships_lookup(
-        std::vector<twitter::string_t>{u("kassol_zx"), u("iorminafellows")});
+    auto friendships =
+        client->get_friendships_lookup(std::vector<twitter::string_t>{
+            u("ohmyarch"), u("kassol_zx"), u("twitterapi")});
     if (friendships.empty()) {
         std::cout << "Failed." << std::endl;
 

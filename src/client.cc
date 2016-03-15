@@ -118,19 +118,17 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
         web::uri_builder builder(u("friendships/lookup.json"));
         builder.append_query(u("screen_name"), query, false);
 
-        const web::json::array root =
+        const web::json::value root =
             api.request(web::http::methods::GET, builder.to_string())
                 .get()
                 .extract_json()
-                .get()
-                .as_array();
+                .get();
 
         std::vector<friendship> friendships;
 
-        friendship friendship;
+        for (const auto &object : root.as_array()) {
+            friendship friendship;
 
-        for (const auto &e : root) {
-            const web::json::object &object = e.as_object();
             friendship.name_ = object.at(u("name")).as_string();
             friendship.screen_name_ = object.at(u("screen_name")).as_string();
             friendship.id_ = object.at(u("id")).as_number().to_uint64();
@@ -186,19 +184,17 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
         web::uri_builder builder(u("friendships/lookup.json"));
         builder.append_query(u("user_id"), query, false);
 
-        const web::json::array root =
+        const web::json::value root =
             api.request(web::http::methods::GET, builder.to_string())
                 .get()
                 .extract_json()
-                .get()
-                .as_array();
+                .get();
 
         std::vector<friendship> friendships;
 
         friendship friendship;
 
-        for (const auto &e : root) {
-            const web::json::object &object = e.as_object();
+        for (const auto &object : root.as_array()) {
             friendship.name_ = object.at(u("name")).as_string();
             friendship.screen_name_ = object.at(u("screen_name")).as_string();
             friendship.id_ = object.at(u("id")).as_number().to_uint64();
@@ -244,17 +240,15 @@ twitter_client::get_account_settings() const {
                                        http_client_config_);
 
     try {
-        const web::json::object root =
+        const web::json::value root =
             api.request(web::http::methods::GET, u("account/settings.json"))
                 .get()
                 .extract_json()
-                .get()
-                .as_object();
+                .get();
 
         account_settings settings;
 
-        const web::json::object &time_zone =
-            root.at(u("time_zone")).as_object();
+        const web::json::value &time_zone = root.at(u("time_zone"));
         settings.time_zone_.name_ = time_zone.at(u("name")).as_string();
         settings.time_zone_.utc_offset_ =
             time_zone.at(u("utc_offset")).as_integer();
@@ -270,8 +264,7 @@ twitter_client::get_account_settings() const {
         settings.use_cookie_personalization_ =
             root.at(u("use_cookie_personalization")).as_bool();
 
-        const web::json::object &sleep_time =
-            root.at(u("sleep_time")).as_object();
+        const web::json::value &sleep_time = root.at(u("sleep_time"));
         if (sleep_time.at(u("enabled")).as_bool()) {
             settings.sleep_time_.start_time_ =
                 static_cast<hour>(sleep_time.at(u("start_time")).as_integer());
@@ -288,7 +281,6 @@ twitter_client::get_account_settings() const {
 
         settings.discoverable_by_mobile_phone_ =
             root.at(u("discoverable_by_mobile_phone")).as_bool();
-        ;
 
         settings.display_sensitive_media_ =
             root.at(u("display_sensitive_media")).as_bool();
@@ -329,12 +321,11 @@ twitter_client::get_help_configuration() const {
                                        http_client_config_);
 
     try {
-        const web::json::object root =
+        const web::json::value root =
             api.request(web::http::methods::GET, u("help/configuration.json"))
                 .get()
                 .extract_json()
-                .get()
-                .as_object();
+                .get();
 
         configuration config;
 
@@ -356,10 +347,9 @@ twitter_client::get_help_configuration() const {
         config.photo_size_limit_ =
             root.at(u("photo_size_limit")).as_number().to_uint32();
 
-        const web::json::object &photo_sizes =
-            root.at(u("photo_sizes")).as_object();
+        const web::json::value &photo_sizes = root.at(u("photo_sizes"));
 
-        const web::json::object &thumb = photo_sizes.at(u("thumb")).as_object();
+        const web::json::value &thumb = photo_sizes.at(u("thumb"));
         config.thumb_photo_size_.h_ =
             static_cast<std::uint16_t>(thumb.at(u("h")).as_integer());
         config.thumb_photo_size_.w_ =
@@ -368,7 +358,7 @@ twitter_client::get_help_configuration() const {
             (thumb.at(u("resize")).as_string() == u("fit")) ? resize::fit
                                                             : resize::crop;
 
-        const web::json::object &small = photo_sizes.at(u("small")).as_object();
+        const web::json::value &small = photo_sizes.at(u("small"));
         config.small_photo_size_.h_ =
             static_cast<std::uint16_t>(small.at(u("h")).as_integer());
         config.small_photo_size_.w_ =
@@ -377,8 +367,7 @@ twitter_client::get_help_configuration() const {
             (small.at(u("resize")).as_string() == u("fit")) ? resize::fit
                                                             : resize::crop;
 
-        const web::json::object &medium =
-            photo_sizes.at(u("medium")).as_object();
+        const web::json::value &medium = photo_sizes.at(u("medium"));
         config.medium_photo_size_.h_ =
             static_cast<std::uint16_t>(medium.at(u("h")).as_integer());
         config.medium_photo_size_.w_ =
@@ -387,7 +376,7 @@ twitter_client::get_help_configuration() const {
             (medium.at(u("resize")).as_string() == u("fit")) ? resize::fit
                                                              : resize::crop;
 
-        const web::json::object &large = photo_sizes.at(u("large")).as_object();
+        const web::json::value &large = photo_sizes.at(u("large"));
         config.large_photo_size_.h_ =
             static_cast<std::uint16_t>(large.at(u("h")).as_integer());
         config.large_photo_size_.w_ =
@@ -417,17 +406,15 @@ std::vector<language> twitter_client::get_help_languages() const {
                                        http_client_config_);
 
     try {
-        const web::json::array root =
+        const web::json::value root =
             api.request(web::http::methods::GET, u("help/languages.json"))
                 .get()
                 .extract_json()
-                .get()
-                .as_array();
+                .get();
 
         std::vector<language> languages;
 
-        for (const auto &e : root) {
-            const web::json::object &object = e.as_object();
+        for (const auto &object : root.as_array()) {
             const string_t &code = object.at(u("code")).as_string();
             const string_t &name = object.at(u("name")).as_string();
             const string_t &status = object.at(u("status")).as_string();
@@ -450,12 +437,11 @@ string_t twitter_client::get_help_privacy() const {
                                        http_client_config_);
 
     try {
-        const web::json::object root =
+        const web::json::value root =
             api.request(web::http::methods::GET, u("help/privacy.json"))
                 .get()
                 .extract_json()
-                .get()
-                .as_object();
+                .get();
 
         return root.at(u("privacy")).as_string();
     } catch (const web::http::http_exception &e) {
@@ -472,12 +458,11 @@ string_t twitter_client::get_help_tos() const {
                                        http_client_config_);
 
     try {
-        const web::json::object root =
+        const web::json::value root =
             api.request(web::http::methods::GET, u("help/tos.json"))
                 .get()
                 .extract_json()
-                .get()
-                .as_object();
+                .get();
 
         return root.at(u("tos")).as_string();
     } catch (const web::http::http_exception &e) {
