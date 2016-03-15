@@ -1,5 +1,7 @@
 # twitter_cpp
 
+[![Build Status](https://travis-ci.org/ohmyarch/twitter_cpp.svg?branch=master)](https://travis-ci.org/ohmyarch/twitter_cpp)
+
 REST APIs | Support
 ------------ | -------------
 [GET friendships/lookup](https://dev.twitter.com/rest/reference/get/friendships/lookup) | :heavy_check_mark:
