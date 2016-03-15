@@ -9,6 +9,7 @@ os: osx
 before_install:
   - brew update
   - brew install cpprestsdk
+  - brew link --force openssl
 
 script:
   - cmake . -DCMAKE_BUILD_TYPE=Release && make -j4
