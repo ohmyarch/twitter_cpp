@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     std::size_t index = 0;
     std::size_t size = languages.size();
 
-    for (auto &e : languages) {
+    for (const auto &e : languages) {
         ucout << u("code: ") << e.code() << std::endl
               << u("name: ") << e.name() << std::endl
               << u("status: ") << e.status() << std::endl;

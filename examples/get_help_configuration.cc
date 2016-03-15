@@ -111,6 +111,6 @@ int main(int argc, char *argv[])
           << std::endl
           << u("non_username_paths:") << std::endl;
 
-    for (auto &e : config->non_username_paths())
+    for (const auto &e : config->non_username_paths())
         ucout << u("                    ") << e << std::endl;
 }

@@ -109,7 +109,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
                                        http_client_config_);
 
     string_t query;
-    for (auto &e : screen_names)
+    for (const auto &e : screen_names)
         query += (e + web::uri::encode_data_string(u(",")));
 
     query.resize(query.size() - 3);
@@ -118,7 +118,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
         web::uri_builder builder(u("friendships/lookup.json"));
         builder.append_query(u("screen_name"), query, false);
 
-        const web::json::array &root =
+        const web::json::array root =
             api.request(web::http::methods::GET, builder.to_string())
                 .get()
                 .extract_json()
@@ -138,7 +138,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
 
             const web::json::array &connections =
                 object.at(u("connections")).as_array();
-            for (auto &connection : connections) {
+            for (const auto &connection : connections) {
                 const string_t &connection_type = connection.as_string();
                 if (connection_type == u("none")) {
                     friendship.connections_.none_ = true;
@@ -176,7 +176,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
                                        http_client_config_);
 
     string_t query;
-    for (auto &e : user_ids)
+    for (const auto &e : user_ids)
         query += (boost::lexical_cast<string_t>(e) +
                   web::uri::encode_data_string(u(",")));
 
@@ -186,7 +186,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
         web::uri_builder builder(u("friendships/lookup.json"));
         builder.append_query(u("user_id"), query, false);
 
-        web::json::array &root =
+        const web::json::array root =
             api.request(web::http::methods::GET, builder.to_string())
                 .get()
                 .extract_json()
@@ -197,16 +197,16 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
 
         friendship friendship;
 
-        for (auto &e : root) {
-            web::json::object &object = e.as_object();
+        for (const auto &e : root) {
+            const web::json::object &object = e.as_object();
             friendship.name_ = object.at(u("name")).as_string();
             friendship.screen_name_ = object.at(u("screen_name")).as_string();
             friendship.id_ = object.at(u("id")).as_number().to_uint64();
             friendship.id_str_ = object.at(u("id_str")).as_string();
 
-            web::json::array &connections =
+            const web::json::array &connections =
                 object.at(u("connections")).as_array();
-            for (auto &connection : connections) {
+            for (const auto &connection : connections) {
                 const string_t &connection_type = connection.as_string();
                 if (connection_type == u("none")) {
                     friendship.connections_.none_ = true;
@@ -244,7 +244,7 @@ twitter_client::get_account_settings() const {
                                        http_client_config_);
 
     try {
-        web::json::object &root =
+        const web::json::object root =
             api.request(web::http::methods::GET, u("account/settings.json"))
                 .get()
                 .extract_json()
@@ -253,12 +253,13 @@ twitter_client::get_account_settings() const {
 
         account_settings settings;
 
-        web::json::object &time_zone = root.at(u("time_zone")).as_object();
-        settings.time_zone_.name_ = time_zone[u("name")].as_string();
+        const web::json::object &time_zone =
+            root.at(u("time_zone")).as_object();
+        settings.time_zone_.name_ = time_zone.at(u("name")).as_string();
         settings.time_zone_.utc_offset_ =
-            time_zone[u("utc_offset")].as_integer();
+            time_zone.at(u("utc_offset")).as_integer();
         settings.time_zone_.tzinfo_name_ =
-            time_zone[u("tzinfo_name")].as_string();
+            time_zone.at(u("tzinfo_name")).as_string();
 
         settings.protected_ = root.at(u("protected")).as_bool();
 
@@ -269,12 +270,13 @@ twitter_client::get_account_settings() const {
         settings.use_cookie_personalization_ =
             root.at(u("use_cookie_personalization")).as_bool();
 
-        web::json::object &sleep_time = root.at(u("sleep_time")).as_object();
-        if (sleep_time[u("enabled")].as_bool()) {
+        const web::json::object &sleep_time =
+            root.at(u("sleep_time")).as_object();
+        if (sleep_time.at(u("enabled")).as_bool()) {
             settings.sleep_time_.start_time_ =
-                static_cast<hour>(sleep_time[u("start_time")].as_integer());
+                static_cast<hour>(sleep_time.at(u("start_time")).as_integer());
             settings.sleep_time_.end_time_ =
-                static_cast<hour>(sleep_time[u("end_time")].as_integer());
+                static_cast<hour>(sleep_time.at(u("end_time")).as_integer());
         }
 
         settings.geo_enabled_ = root.at(u("geo_enabled")).as_bool();
@@ -327,7 +329,7 @@ twitter_client::get_help_configuration() const {
                                        http_client_config_);
 
     try {
-        web::json::object &root =
+        const web::json::object root =
             api.request(web::http::methods::GET, u("help/configuration.json"))
                 .get()
                 .extract_json()
@@ -354,9 +356,10 @@ twitter_client::get_help_configuration() const {
         config.photo_size_limit_ =
             root.at(u("photo_size_limit")).as_number().to_uint32();
 
-        web::json::object &photo_sizes = root.at(u("photo_sizes")).as_object();
+        const web::json::object &photo_sizes =
+            root.at(u("photo_sizes")).as_object();
 
-        web::json::object &thumb = photo_sizes.at(u("thumb")).as_object();
+        const web::json::object &thumb = photo_sizes.at(u("thumb")).as_object();
         config.thumb_photo_size_.h_ =
             static_cast<std::uint16_t>(thumb.at(u("h")).as_integer());
         config.thumb_photo_size_.w_ =
@@ -365,7 +368,7 @@ twitter_client::get_help_configuration() const {
             (thumb.at(u("resize")).as_string() == u("fit")) ? resize::fit
                                                             : resize::crop;
 
-        web::json::object &small = photo_sizes.at(u("small")).as_object();
+        const web::json::object &small = photo_sizes.at(u("small")).as_object();
         config.small_photo_size_.h_ =
             static_cast<std::uint16_t>(small.at(u("h")).as_integer());
         config.small_photo_size_.w_ =
@@ -374,7 +377,8 @@ twitter_client::get_help_configuration() const {
             (small.at(u("resize")).as_string() == u("fit")) ? resize::fit
                                                             : resize::crop;
 
-        web::json::object &medium = photo_sizes.at(u("medium")).as_object();
+        const web::json::object &medium =
+            photo_sizes.at(u("medium")).as_object();
         config.medium_photo_size_.h_ =
             static_cast<std::uint16_t>(medium.at(u("h")).as_integer());
         config.medium_photo_size_.w_ =
@@ -383,7 +387,7 @@ twitter_client::get_help_configuration() const {
             (medium.at(u("resize")).as_string() == u("fit")) ? resize::fit
                                                              : resize::crop;
 
-        web::json::object &large = photo_sizes.at(u("large")).as_object();
+        const web::json::object &large = photo_sizes.at(u("large")).as_object();
         config.large_photo_size_.h_ =
             static_cast<std::uint16_t>(large.at(u("h")).as_integer());
         config.large_photo_size_.w_ =
@@ -392,9 +396,9 @@ twitter_client::get_help_configuration() const {
             (large.at(u("resize")).as_string() == u("fit")) ? resize::fit
                                                             : resize::crop;
 
-        web::json::array &non_username_paths =
+        const web::json::array &non_username_paths =
             root.at(u("non_username_paths")).as_array();
-        for (auto &e : non_username_paths) {
+        for (const auto &e : non_username_paths) {
             config.non_username_paths_.emplace_back(e.as_string());
         }
 
@@ -413,7 +417,7 @@ std::vector<language> twitter_client::get_help_languages() const {
                                        http_client_config_);
 
     try {
-        web::json::array &root =
+        const web::json::array root =
             api.request(web::http::methods::GET, u("help/languages.json"))
                 .get()
                 .extract_json()
@@ -422,8 +426,8 @@ std::vector<language> twitter_client::get_help_languages() const {
 
         std::vector<language> languages;
 
-        for (auto &e : root) {
-            web::json::object &object = e.as_object();
+        for (const auto &e : root) {
+            const web::json::object &object = e.as_object();
             const string_t &code = object.at(u("code")).as_string();
             const string_t &name = object.at(u("name")).as_string();
             const string_t &status = object.at(u("status")).as_string();
@@ -446,7 +450,7 @@ string_t twitter_client::get_help_privacy() const {
                                        http_client_config_);
 
     try {
-        web::json::object &root =
+        const web::json::object root =
             api.request(web::http::methods::GET, u("help/privacy.json"))
                 .get()
                 .extract_json()
@@ -468,7 +472,7 @@ string_t twitter_client::get_help_tos() const {
                                        http_client_config_);
 
     try {
-        web::json::object &root =
+        const web::json::object root =
             api.request(web::http::methods::GET, u("help/tos.json"))
                 .get()
                 .extract_json()

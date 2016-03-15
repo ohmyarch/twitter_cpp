@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
             std::cout << "  blocking" << std::endl;
     };
 
-    for (auto &e : friendships) {
+    for (const auto &e : friendships) {
         ucout << u("name: ") << e.name() << std::endl
               << u("screen_name: ") << e.screen_name() << std::endl
               << u("id: ") << e.id() << std::endl

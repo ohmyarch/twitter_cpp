@@ -88,7 +88,7 @@ class friendship {
   public:
     friendship() {}
     friendship(friendship &&other)
-        : name_(std::move(other.screen_name_)),
+        : name_(std::move(other.name_)),
           screen_name_(std::move(other.screen_name_)),
           id_str_(std::move(other.id_str_)), id_(other.id_),
           connections_(other.connections_) {}
