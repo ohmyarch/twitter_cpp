@@ -6,14 +6,14 @@ compiler:
 
 os: osx
 
+osx_image: xcode7.3
+
 before_install:
   - brew update
   - brew upgrade cmake
   - brew install cpprestsdk
   - brew link --force openssl
-  - if [ "$CXX" = "g++" ]; then brew upgrade gcc; fi
-  - if [ "$CXX" = "clang++" ]; then brew install llvm --with-clang; brew link --force llvm; fi
-      
+  - if [ "$CXX" = "g++" ]; then brew install gcc; export CXX="g++"; fi
 
 script:
   - cmake . -DCMAKE_BUILD_TYPE=Release && make -j4
