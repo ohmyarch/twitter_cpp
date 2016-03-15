@@ -1,19 +1,19 @@
 language: cpp
 
 compiler:
-  - clang
   - gcc
+  - clang
 
 os: osx
 
 before_install:
   - brew update
-  - brew upgrade gcc
   - brew upgrade cmake
-  - brew install llvm --with-clang
   - brew install cpprestsdk
-  - brew link --force llvm
   - brew link --force openssl
+  - if [ "$CXX" = "g++" ]; then brew upgrade gcc; fi
+  - if [ "$CXX" = "clang++" ]; then brew install llvm --with-clang; brew link --force llvm; fi
+      
 
 script:
   - cmake . -DCMAKE_BUILD_TYPE=Release && make -j4
