@@ -13,7 +13,6 @@ before_install:
   - brew install cmake
   - brew install cpprestsdk
   - brew link --force openssl
-  - if [ "$CXX" = "g++" ]; then brew install gcc; export CXX="g++"; fi
 
 script:
   - cmake . -DCMAKE_BUILD_TYPE=Release && make -j4
