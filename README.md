@@ -1,8 +1,7 @@
 # twitter_cpp
 
-[![Join the chat at https://gitter.im/ohmyarch/twitter_cpp](https://badges.gitter.im/ohmyarch/twitter_cpp.svg)](https://gitter.im/ohmyarch/twitter_cpp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 [![Build Status](https://travis-ci.org/ohmyarch/twitter_cpp.svg?branch=master)](https://travis-ci.org/ohmyarch/twitter_cpp)
+[![Join the chat at https://gitter.im/ohmyarch/twitter_cpp](https://badges.gitter.im/ohmyarch/twitter_cpp.svg)](https://gitter.im/ohmyarch/twitter_cpp?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 REST APIs | Support
 ------------ | -------------
