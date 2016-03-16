@@ -18,7 +18,7 @@ matrix:
           - llvm-toolchain-precise-3.7
           packages:
           - clang-3.7
-          - libc++-dev
+          - llvm-3.7-dev
           - libssl-dev
           - libc++abi-dev
           - libboost-regex1.55-dev
