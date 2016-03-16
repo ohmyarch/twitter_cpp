@@ -38,7 +38,7 @@ matrix:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      CXX=COMPILER;
+      CXX=$COMPILER;
       cd ..;
       git clone --branch=development https://github.com/Microsoft/cpprestsdk.git;
       cd cpprestsdk/Release;
