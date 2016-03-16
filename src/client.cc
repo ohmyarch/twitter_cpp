@@ -158,7 +158,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
             friendships.emplace_back(std::move(friendship));
         }
 
-        return friendships;
+        return std::move(friendships);
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
@@ -224,7 +224,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
             friendships.emplace_back(std::move(friendship));
         }
 
-        return friendships;
+        return std::move(friendships);
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {

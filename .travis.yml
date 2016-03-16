@@ -47,7 +47,8 @@ before_install:
       cd .. &&
       git clone --branch=development https://github.com/Microsoft/cpprestsdk.git &&
       cd cpprestsdk/Release &&
-      cmake -DBUILD_TESTS=OFF -DBUILD_SAMPLES=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr &&
+      sed -i '10d' CMakeLists.txt &&
+      cmake -DBUILD_TESTS=OFF -DBUILD_SAMPLES=OFF -DCMAKE_BUILD_TYPE=Release &&
       sudo make install &&
       cd ../../twitter_cpp;
     else
