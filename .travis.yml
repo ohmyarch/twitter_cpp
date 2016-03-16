@@ -14,14 +14,13 @@ matrix:
       addons:
         apt:
           sources:
-          - kalakris-cmake
           - ubuntu-toolchain-r-test
           - llvm-toolchain-precise-3.7
           packages:
-          - cmake
           - clang-3.7
           - libc++-dev
           - libssl-dev
+          - libc++abi-dev
           - libboost-regex1.55-dev
           - libboost-random1.55-dev
           - libboost-thread1.55-dev
