@@ -15,7 +15,7 @@ before_install:
   - brew link --force openssl
   - if [ "$CXX" = "g++" ]; then
       brew install gcc;
-      CC=gcc-5 CXX=g++-5 CXXFLAGS=-nostdinc++ -I/Library/Developer/CommandLineTools/usr/include/c++/v1 -nodefaultlibs -lc++ -lc++abi -lm -lc;
+      CC=gcc-5 CXX=g++-5 CXXFLAGS=-nostdinc++ -I/Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1 -nodefaultlibs -lc++ -lc++abi -lm -lc;
     fi
 
 script:
