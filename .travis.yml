@@ -3,18 +3,21 @@ language: cpp
 sudo: required
 dist: trusty
 
+osx_image: xcode7.3
+
 matrix:
   include:
     - os: osx
-      osx_image: xcode7.3
       compiler: clang
     - os: linux
       compiler: clang
-      env: COMPILER=clang++-3.8
+      env: COMPILER=clang++-3.7
       addons:
         apt:
+          sources:
+          - llvm-toolchain-precise-3.7
           packages:
-          - clang-3.8
+          - clang-3.7
           - libc++-dev
           - libssl-dev
           - libboost-regex1.55-dev
@@ -27,6 +30,8 @@ matrix:
       env: COMPILER=g++-5
       addons:
         apt:
+          sources:
+          - ubuntu-toolchain-r-test
           packages:
           - g++-5
           - libssl-dev
@@ -38,17 +43,17 @@ matrix:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      CXX=$COMPILER;
-      cd ..;
-      git clone --branch=development https://github.com/Microsoft/cpprestsdk.git;
-      cd cpprestsdk/Release;
-      cmake -DBUILD_TESTS=OFF -DBUILD_SAMPLES=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr;
-      sudo make install;
+      CXX=$COMPILER &&
+      cd .. &&
+      git clone --branch=development https://github.com/Microsoft/cpprestsdk.git &&
+      cd cpprestsdk/Release &&
+      cmake -DBUILD_TESTS=OFF -DBUILD_SAMPLES=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr &&
+      sudo make install &&
       cd ../../twitter_cpp;
     else
-      brew update;
-      brew install cmake;
-      brew install cpprestsdk;
+      brew update &&
+      brew install cmake &&
+      brew install cpprestsdk &&
       brew link --force openssl;
     fi
 
@@ -56,5 +61,13 @@ script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       cmake -DCMAKE_BUILD_TYPE=Release && sudo make install;
     else
-      cmake . -DCMAKE_BUILD_TYPE=Release && make;
+      cmake -DCMAKE_BUILD_TYPE=Release && make;
     fi
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/ef4adc77ababc00645b7
+    on_success: change
+    on_failure: always
+    on_start: never
