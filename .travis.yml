@@ -24,11 +24,11 @@ matrix:
           - libboost-program-options1.55-dev
     - os: linux
       compiler: gcc
-      env: COMPILER=g++5
+      env: COMPILER=g++-5
       addons:
         apt:
           packages:
-          - g++5
+          - g++-5
           - libssl-dev
           - libboost-regex1.55-dev
           - libboost-random1.55-dev
