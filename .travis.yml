@@ -1,7 +1,6 @@
 language: cpp
 
 sudo: required
-dist: trusty
 
 matrix:
   include:
@@ -9,6 +8,7 @@ matrix:
       osx_image: xcode7.3
       compiler: clang
     - os: linux
+      dist: trusty
       compiler: clang
       addons:
         apt:
@@ -22,6 +22,7 @@ matrix:
           - libicu-dev
           - libc++abi-dev
     - os: linux
+      dist: trusty
       compiler: gcc
       addons:
         apt:
@@ -41,12 +42,12 @@ before_install:
       if [ "$CXX" = "g++" ]; then
         CXX=g++-5 &&
         ./bootstrap.sh --with-libraries=random,chrono,system,thread,regex,filesystem,program_options &&
-        sudo ./b2 -q variant=release link=shared threading=multi runtime-link=shared install;
+        sudo ./b2 -q variant=release link=shared threading=multi runtime-link=shared install > /dev/null;
       else
         CXX=clang++-3.7 &&
         sudo ln -s /usr/bin/clang++-3.7 /usr/bin/clang++ &&
         ./bootstrap.sh --with-toolset=clang --with-libraries=random,chrono,system,thread,regex,filesystem,program_options &&
-        sudo ./b2 -q cxxflags="-stdlib=libc++ -std=c++14" linkflags="-stdlib=libc++" variant=release link=shared threading=multi runtime-link=shared install;
+        sudo ./b2 -q cxxflags="-stdlib=libc++ -std=c++14" linkflags="-stdlib=libc++" variant=release link=shared threading=multi runtime-link=shared install > /dev/null;
       fi &&
       cd .. &&
       git clone --branch=development https://github.com/Microsoft/cpprestsdk.git &&
