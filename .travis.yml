@@ -14,37 +14,37 @@ matrix:
       addons:
         apt:
           sources:
+          - kalakris-cmake
           - ubuntu-toolchain-r-test
           - llvm-toolchain-precise-3.7
           packages:
+          - cmake
           - clang-3.7
-          - llvm-3.7-dev
+          - libc++-dev
           - libssl-dev
           - libc++abi-dev
-          - libboost-regex1.55-dev
-          - libboost-random1.55-dev
-          - libboost-thread1.55-dev
-          - libboost-filesystem1.55-dev
-          - libboost-program-options1.55-dev
     - os: linux
       compiler: gcc
       env: COMPILER=g++-5
       addons:
         apt:
           sources:
+          - kalakris-cmake
           - ubuntu-toolchain-r-test
           packages:
+          - cmake
           - g++-5
           - libssl-dev
-          - libboost-regex1.55-dev
-          - libboost-random1.55-dev
-          - libboost-thread1.55-dev
-          - libboost-filesystem1.55-dev
-          - libboost-program-options1.55-dev
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       CXX=$COMPILER &&
+      cd .. &&
+      wget https://sourceforge.net/projects/boost/files/boost/1.60.0/boost_1_60_0.tar.gz &&
+      tar xf boost_1_60_0.tar.gz &&
+      cd boost_1_60_0 &&
+      ./bootstrap.sh --with-libraries=random,chrono,system,thread,regex,filesystem,program_options &&
+      ./b2 variant=release link=shared threading=multi runtime-link=shared install &&
       cd .. &&
       git clone --branch=development https://github.com/Microsoft/cpprestsdk.git &&
       cd cpprestsdk/Release &&
