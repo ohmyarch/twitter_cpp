@@ -10,7 +10,6 @@ matrix:
       compiler: clang
     - os: linux
       compiler: clang
-      env: COMPILER=clang++-3.7
       addons:
         apt:
           sources:
@@ -20,10 +19,10 @@ matrix:
           - clang-3.7
           - libc++-dev
           - libssl-dev
+          - libicu-dev
           - libc++abi-dev
     - os: linux
       compiler: gcc
-      env: COMPILER=g++-5
       addons:
         apt:
           sources:
@@ -31,16 +30,24 @@ matrix:
           packages:
           - g++-5
           - libssl-dev
+          - libicu-dev
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      CXX=$COMPILER &&
       cd .. &&
       wget https://sourceforge.net/projects/boost/files/boost/1.60.0/boost_1_60_0.tar.gz &&
       tar xf boost_1_60_0.tar.gz &&
       cd boost_1_60_0 &&
-      ./bootstrap.sh --with-toolset=clang --with-libraries=random,chrono,system,thread,regex,filesystem,program_options &&
-      sudo ./b2 -q cxxflags="-stdlib=libc++ -std=c++14" linkflags="-stdlib=libc++" variant=release link=shared threading=multi runtime-link=shared install &&
+      if [ "$CXX" = "g++" ]; then
+        CXX=g++-5 &&
+        ./bootstrap.sh --with-libraries=random,chrono,system,thread,regex,filesystem,program_options &&
+        sudo ./b2 -q variant=release link=shared threading=multi runtime-link=shared install;
+      else
+        CXX=clang++-3.7 &&
+        alias clang++=$CXX &&
+        ./bootstrap.sh --with-toolset=clang --with-libraries=random,chrono,system,thread,regex,filesystem,program_options &&
+        sudo ./b2 -q cxxflags="-stdlib=libc++ -std=c++14" linkflags="-stdlib=libc++" variant=release link=shared threading=multi runtime-link=shared install;
+      fi
       cd .. &&
       git clone --branch=development https://github.com/Microsoft/cpprestsdk.git &&
       cd cpprestsdk/Release &&
