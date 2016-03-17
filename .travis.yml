@@ -47,7 +47,7 @@ before_install:
         alias clang++=$CXX &&
         ./bootstrap.sh --with-toolset=clang --with-libraries=random,chrono,system,thread,regex,filesystem,program_options &&
         sudo ./b2 -q cxxflags="-stdlib=libc++ -std=c++14" linkflags="-stdlib=libc++" variant=release link=shared threading=multi runtime-link=shared install;
-      fi
+      fi &&
       cd .. &&
       git clone --branch=development https://github.com/Microsoft/cpprestsdk.git &&
       cd cpprestsdk/Release &&
