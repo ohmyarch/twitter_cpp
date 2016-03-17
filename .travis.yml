@@ -40,7 +40,7 @@ before_install:
       tar xf boost_1_60_0.tar.gz &&
       cd boost_1_60_0 &&
       ./bootstrap.sh --with-libraries=random,chrono,system,thread,regex,filesystem,program_options &&
-      ./b2 variant=release link=shared threading=multi runtime-link=shared install &&
+      sudo ./b2 variant=release link=shared threading=multi runtime-link=shared install &&
       cd .. &&
       git clone --branch=development https://github.com/Microsoft/cpprestsdk.git &&
       cd cpprestsdk/Release &&
