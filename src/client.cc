@@ -128,7 +128,6 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
 
         for (const auto &object : root.as_array()) {
             friendship friendship;
-
             friendship.name_ = object.at(u("name")).as_string();
             friendship.screen_name_ = object.at(u("screen_name")).as_string();
             friendship.id_ = object.at(u("id")).as_number().to_uint64();
@@ -192,9 +191,8 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
 
         std::vector<friendship> friendships;
 
-        friendship friendship;
-
         for (const auto &object : root.as_array()) {
+            friendship friendship;
             friendship.name_ = object.at(u("name")).as_string();
             friendship.screen_name_ = object.at(u("screen_name")).as_string();
             friendship.id_ = object.at(u("id")).as_number().to_uint64();
@@ -274,7 +272,77 @@ twitter_client::get_account_settings() const {
 
         settings.geo_enabled_ = root.at(u("geo_enabled")).as_bool();
 
-        settings.language_ = root.at(u("language")).as_string();
+        auto string_to_language = [](const string_t &str) {
+            if (str == "fr")
+                return language::fr;
+            if (str == "en")
+                return language::en;
+            if (str == "ar")
+                return language::ar;
+            if (str == "ja")
+                return language::ja;
+            if (str == "es")
+                return language::es;
+            if (str == "de")
+                return language::de;
+            if (str == "it")
+                return language::it;
+            if (str == "id")
+                return language::id;
+            if (str == "pt")
+                return language::pt;
+            if (str == "ko")
+                return language::ko;
+            if (str == "tr")
+                return language::tr;
+            if (str == "ru")
+                return language::ru;
+            if (str == "nl")
+                return language::nl;
+            if (str == "fil")
+                return language::fil;
+            if (str == "msa")
+                return language::msa;
+            if (str == "zh-TW")
+                return language::zh_tw;
+            if (str == "zh-CN")
+                return language::zh_cn;
+            if (str == "hi")
+                return language::hi;
+            if (str == "no")
+                return language::no;
+            if (str == "sv")
+                return language::sv;
+            if (str == "fi")
+                return language::fi;
+            if (str == "da")
+                return language::da;
+            if (str == "pl")
+                return language::pl;
+            if (str == "hu")
+                return language::hu;
+            if (str == "fa")
+                return language::fa;
+            if (str == "he")
+                return language::he;
+            if (str == "th")
+                return language::th;
+            if (str == "uk")
+                return language::uk;
+            if (str == "cs")
+                return language::cs;
+            if (str == "ro")
+                return language::ro;
+            if (str == "en_GB")
+                return language::en_gb;
+            if (str == "vi")
+                return language::vi;
+
+            return language::bn;
+        };
+
+        settings.language_ =
+            string_to_language(root.at(u("language")).as_string());
 
         settings.discoverable_by_email_ =
             root.at(u("discoverable_by_email")).as_bool();
@@ -290,10 +358,10 @@ twitter_client::get_account_settings() const {
         auto string_to_allowed = [](const string_t &str) {
             if (str == u("all"))
                 return allowed::all;
-            else if (str == u("following"))
+            if (str == u("following"))
                 return allowed::following;
-            else
-                return allowed::none;
+
+            return allowed::none;
         };
 
         settings.allow_contributor_request_ = string_to_allowed(
@@ -313,6 +381,43 @@ twitter_client::get_account_settings() const {
     }
 
     return std::experimental::optional<account_settings>();
+}
+
+std::vector<suggested_category>
+twitter_client::get_users_suggestions(language lang) const {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    try {
+        web::uri_builder builder(u("users/suggestions.json"));
+        builder.append_query(u("lang"), u("en"), false);
+
+        const web::json::value root =
+            api.request(web::http::methods::GET, builder.to_string())
+                .get()
+                .extract_json()
+                .get();
+
+        std::vector<suggested_category> suggested_categories;
+
+        for (const auto &object : root.as_array()) {
+            suggested_category category;
+            category.name_ = object.at(u("name")).as_string();
+            category.slug_ = object.at(u("slug")).as_string();
+            category.size_ =
+                static_cast<std::uint16_t>(object.at(u("size")).as_integer());
+
+            suggested_categories.emplace_back(std::move(category));
+        }
+
+        return std::move(suggested_categories);
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+    return std::vector<suggested_category>();
 }
 
 std::experimental::optional<configuration>
@@ -401,7 +506,7 @@ twitter_client::get_help_configuration() const {
     return std::experimental::optional<configuration>();
 }
 
-std::vector<language> twitter_client::get_help_languages() const {
+std::vector<language_info> twitter_client::get_help_languages() const {
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
@@ -412,7 +517,7 @@ std::vector<language> twitter_client::get_help_languages() const {
                 .extract_json()
                 .get();
 
-        std::vector<language> languages;
+        std::vector<language_info> languages;
 
         for (const auto &object : root.as_array()) {
             const string_t &code = object.at(u("code")).as_string();
@@ -429,7 +534,7 @@ std::vector<language> twitter_client::get_help_languages() const {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return std::vector<language>();
+    return std::vector<language_info>();
 }
 
 string_t twitter_client::get_help_privacy() const {

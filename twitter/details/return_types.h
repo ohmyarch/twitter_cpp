@@ -32,6 +32,42 @@
 #include <vector>
 
 namespace twitter {
+enum class language : std::uint8_t {
+    fr,
+    en,
+    ar,
+    ja,
+    es,
+    de,
+    it,
+    id,
+    pt,
+    ko,
+    tr,
+    ru,
+    nl,
+    fil,
+    msa,
+    zh_tw, // zh-TW
+    zh_cn, // zh-CN
+    hi,
+    no,
+    sv,
+    fi,
+    da,
+    pl,
+    hu,
+    fa,
+    he,
+    th,
+    uk,
+    cs,
+    ro,
+    en_gb, // en-GB
+    vi,
+    bn
+};
+
 enum class hour : std::int8_t {
     null = -1,
     _00 = 0,
@@ -87,17 +123,18 @@ class connections {
 class friendship {
   public:
     friendship() {}
-    friendship(friendship &&other)
+    friendship(friendship &&other) noexcept
         : name_(std::move(other.name_)),
           screen_name_(std::move(other.screen_name_)),
-          id_str_(std::move(other.id_str_)), id_(other.id_),
+          id_str_(std::move(other.id_str_)),
+          id_(other.id_),
           connections_(other.connections_) {}
 
     const string_t &name() const { return name_; }
     const string_t &screen_name() const { return screen_name_; }
     const string_t &id_str() const { return id_str_; }
     std::uint64_t id() const { return id_; }
-    const twitter::connections &connections() const { return connections_; }
+    const class connections &connections() const { return connections_; }
 
   private:
     friend class twitter_client;
@@ -106,12 +143,13 @@ class friendship {
     string_t screen_name_;
     string_t id_str_;
     std::uint64_t id_;
-    twitter::connections connections_;
+    class connections connections_;
 };
 
-class language {
+class language_info {
   public:
-    language(const string_t &code, const string_t &name, const string_t &status)
+    language_info(const string_t &code, const string_t &name,
+                  const string_t &status)
         : code_(code), name_(name), status_(status) {}
 
     // void set_code(const string_t &code) { code_ = code; }
@@ -131,8 +169,9 @@ class language {
 class time_zone {
   public:
     time_zone(){};
-    time_zone(time_zone &&other)
-        : utc_offset_(other.utc_offset_), name_(std::move(other.name_)),
+    time_zone(time_zone &&other) noexcept
+        : utc_offset_(other.utc_offset_),
+          name_(std::move(other.name_)),
           tzinfo_name_(std::move(other.tzinfo_name_)) {}
     time_zone(const string_t &name, const int utc_offset,
               const string_t &tzinfo_name)
@@ -185,8 +224,9 @@ class sleep_time {
 class account_settings {
   public:
     account_settings() {}
-    account_settings(account_settings &&other)
-        : protected_(other.protected_), geo_enabled_(other.geo_enabled_),
+    account_settings(account_settings &&other) noexcept
+        : protected_(other.protected_),
+          geo_enabled_(other.geo_enabled_),
           always_use_https_(other.always_use_https_),
           discoverable_by_email_(other.discoverable_by_email_),
           discoverable_by_mobile_phone_(other.discoverable_by_mobile_phone_),
@@ -196,10 +236,10 @@ class account_settings {
           allow_contributor_request_(other.allow_contributor_request_),
           allow_dms_from_(other.allow_dms_from_),
           allow_dm_groups_from_(other.allow_dm_groups_from_),
-          time_zone_(std::move(other.time_zone_)),
-          sleep_time_(other.sleep_time_),
+          language_(other.language_),
           screen_name_(std::move(other.screen_name_)),
-          language_(std::move(other.language_)) {}
+          time_zone_(std::move(other.time_zone_)),
+          sleep_time_(other.sleep_time_) {}
 
     //     void set_protected(const bool is_protected) { protected_ =
     //     is_protected; }
@@ -262,10 +302,10 @@ class account_settings {
     }
     allowed allow_dms_from() const { return allow_dms_from_; }
     allowed allow_dm_groups_from() const { return allow_dm_groups_from_; }
-    const twitter::time_zone &time_zone() const { return time_zone_; }
-    const twitter::sleep_time &sleep_time() const { return sleep_time_; }
+    enum language language() const { return language_; }
     const string_t &screen_name() const { return screen_name_; }
-    const string_t &language() const { return language_; }
+    const class time_zone &time_zone() const { return time_zone_; }
+    const class sleep_time &sleep_time() const { return sleep_time_; }
 
   private:
     friend class twitter_client;
@@ -281,26 +321,42 @@ class account_settings {
     allowed allow_contributor_request_;
     allowed allow_dms_from_;
     allowed allow_dm_groups_from_;
-    twitter::time_zone time_zone_;
-    twitter::sleep_time sleep_time_;
+    enum language language_;
     string_t screen_name_;
-    string_t language_;
+    class time_zone time_zone_;
+    class sleep_time sleep_time_;
 
     // bool protected_changed_;
+};
+
+class suggested_category {
+  public:
+    suggested_category() {}
+
+    std::uint16_t size() const { return size_; }
+    string_t name() const { return name_; }
+    string_t slug() const { return slug_; }
+
+  private:
+    friend class twitter_client;
+
+    std::uint16_t size_;
+    string_t name_;
+    string_t slug_;
 };
 
 class photo_size {
   public:
     std::uint16_t h() const { return h_; }
     std::uint16_t w() const { return w_; }
-    twitter::resize resize() const { return resize_; }
+    enum resize resize() const { return resize_; }
 
   private:
     friend class twitter_client;
 
     std::uint16_t h_;
     std::uint16_t w_;
-    twitter::resize resize_;
+    enum resize resize_;
 };
 
 class configuration {
@@ -352,6 +408,6 @@ class configuration {
     photo_size small_photo_size_;
     photo_size medium_photo_size_;
     photo_size large_photo_size_;
-    std::vector<twitter::string_t> non_username_paths_;
+    std::vector<string_t> non_username_paths_;
 };
 }

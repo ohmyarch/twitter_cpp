@@ -43,22 +43,23 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    auto init = ::init(argc, argv, "get_help_languages");
+    const auto init = ::init(argc, argv, "get_help_languages");
     init_flag flag = std::get<0>(init);
     if (flag == init_flag::error)
         return 1;
     else if (flag == init_flag::show_help)
         return 0;
 
-    auto client = auth(std::get<1>(init));
+    const auto client = auth(std::get<1>(init));
     if (!client) {
         std::cout << "Failed." << std::endl;
 
         return 1;
     }
 
-    std::vector<twitter::language> languages = client->get_help_languages();
-    if (languages.empty()) {
+    std::vector<twitter::language_info> languages_info =
+        client->get_help_languages();
+    if (languages_info.empty()) {
         std::cout << "Failed." << std::endl;
 
         return 1;
@@ -67,9 +68,9 @@ int main(int argc, char *argv[])
     std::cout << "Languages supported by Twitter:" << std::endl << std::endl;
 
     std::size_t index = 0;
-    std::size_t size = languages.size();
+    std::size_t size = languages_info.size();
 
-    for (const auto &e : languages) {
+    for (const auto &e : languages_info) {
         ucout << u("code: ") << e.code() << std::endl
               << u("name: ") << e.name() << std::endl
               << u("status: ") << e.status() << std::endl;

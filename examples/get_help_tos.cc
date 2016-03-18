@@ -44,14 +44,14 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    auto init = ::init(argc, argv, "get_help_tos");
+    const auto init = ::init(argc, argv, "get_help_tos");
     init_flag flag = std::get<0>(init);
     if (flag == init_flag::error)
         return 1;
     else if (flag == init_flag::show_help)
         return 0;
 
-    auto client = auth(std::get<1>(init));
+    const auto client = auth(std::get<1>(init));
     if (!client) {
         std::cout << "Failed." << std::endl;
 

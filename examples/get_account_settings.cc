@@ -44,14 +44,14 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    auto init = ::init(argc, argv, "get_account_settings");
+    const auto init = ::init(argc, argv, "get_account_settings");
     init_flag flag = std::get<0>(init);
     if (flag == init_flag::error)
         return 1;
     else if (flag == init_flag::show_help)
         return 0;
 
-    auto client = auth(std::get<1>(init));
+    const auto client = auth(std::get<1>(init));
     if (!client) {
         std::cout << "Failed." << std::endl;
 
@@ -74,6 +74,77 @@ int main(int argc, char *argv[])
             return twitter::string_t(u("null"));
         else
             return boost::lexical_cast<twitter::string_t>(i);
+    };
+
+    auto language_to_string = [](const twitter::language lang) {
+        switch (lang) {
+        case twitter::language::fr:
+            return u("fr");
+        case twitter::language::en:
+            return u("en");
+        case twitter::language::ar:
+            return u("ar");
+        case twitter::language::ja:
+            return u("ja");
+        case twitter::language::es:
+            return u("es");
+        case twitter::language::de:
+            return u("de");
+        case twitter::language::it:
+            return u("it");
+        case twitter::language::id:
+            return u("id");
+        case twitter::language::pt:
+            return u("pt");
+        case twitter::language::ko:
+            return u("ko");
+        case twitter::language::tr:
+            return u("tr");
+        case twitter::language::ru:
+            return u("ru");
+        case twitter::language::nl:
+            return u("nl");
+        case twitter::language::fil:
+            return u("fil");
+        case twitter::language::msa:
+            return u("msa");
+        case twitter::language::zh_tw:
+            return u("zh-TW");
+        case twitter::language::zh_cn:
+            return u("zh-CN");
+        case twitter::language::hi:
+            return u("hi");
+        case twitter::language::no:
+            return u("no");
+        case twitter::language::sv:
+            return u("sv");
+        case twitter::language::fi:
+            return u("fi");
+        case twitter::language::da:
+            return u("da");
+        case twitter::language::pl:
+            return u("pl");
+        case twitter::language::hu:
+            return u("hu");
+        case twitter::language::fa:
+            return u("fa");
+        case twitter::language::he:
+            return u("he");
+        case twitter::language::th:
+            return u("th");
+        case twitter::language::uk:
+            return u("uk");
+        case twitter::language::cs:
+            return u("cs");
+        case twitter::language::ro:
+            return u("ro");
+        case twitter::language::en_gb:
+            return u("en-GB");
+        case twitter::language::vi:
+            return u("vi");
+        case twitter::language::bn:
+            return u("bn");
+        }
     };
 
     auto settings = client->get_account_settings();
@@ -105,7 +176,8 @@ int main(int argc, char *argv[])
           << "  end_time: " << hour_to_string(settings->sleep_time().end_time())
           << std::endl
           << u("geo_enabled: ") << settings->is_geo_enabled() << std::endl
-          << u("language: ") << settings->language() << std::endl
+          << u("language: ") << language_to_string(settings->language())
+          << std::endl
           << u("discoverable_by_email: ")
           << settings->is_discoverable_by_email() << std::endl
           << u("discoverable_by_mobile_phone: ")

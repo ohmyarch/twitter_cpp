@@ -157,7 +157,7 @@ class twitter_client {
     const string_t &callback_uri() const {
         return oauth1_config_.callback_uri();
     }
-    twitter::token token() const {
+    class token token() const {
         const web::http::oauth1::experimental::oauth1_token &oauth1_token =
             oauth1_config_.token();
 
@@ -186,8 +186,11 @@ class twitter_client {
 
     std::experimental::optional<account_settings> get_account_settings() const;
 
+    std::vector<suggested_category>
+    get_users_suggestions(language lang = language::en) const;
+
     std::experimental::optional<configuration> get_help_configuration() const;
-    std::vector<language> get_help_languages() const;
+    std::vector<language_info> get_help_languages() const;
     string_t get_help_privacy() const;
     string_t get_help_tos() const;
 
