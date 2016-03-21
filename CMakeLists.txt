@@ -14,7 +14,7 @@ if(WIN32)
 endif()
 
 find_package(Threads REQUIRED)
-find_package(Casablanca REQUIRED)
+find_package(Casablanca 2.8.0 REQUIRED)
 
 if(BUILD_EXAMPLES)
   find_package(Boost REQUIRED COMPONENTS random chrono system thread program_options)

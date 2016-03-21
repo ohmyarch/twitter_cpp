@@ -57,8 +57,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::vector<twitter::language_info> languages_info =
-        client->get_help_languages();
+    const auto languages_info = client->get_help_languages();
     if (languages_info.empty()) {
         std::cout << "Failed." << std::endl;
 

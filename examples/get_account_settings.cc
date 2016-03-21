@@ -58,22 +58,12 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    auto allowed_to_string = [](const twitter::allowed who) {
-        if (who == twitter::allowed::all)
-            return u("all");
-        else if (who == twitter::allowed::following)
-            return u("following");
-        else
-            return u("none");
-    };
+    auto hour_to_string = [](bool is_enabled, const twitter::hour hour) {
+        if (is_enabled)
+            return boost::lexical_cast<twitter::string_t>(
+                static_cast<std::uint16_t>(hour));
 
-    auto hour_to_string = [](const twitter::hour hour) {
-        std::int8_t i;
-
-        if ((i = static_cast<std::int8_t>(hour)) == -1)
-            return twitter::string_t(u("null"));
-        else
-            return boost::lexical_cast<twitter::string_t>(i);
+        return twitter::string_t(u("null"));
     };
 
     auto language_to_string = [](const twitter::language lang) {
@@ -147,7 +137,16 @@ int main(int argc, char *argv[])
         }
     };
 
-    auto settings = client->get_account_settings();
+    auto allowed_to_string = [](const twitter::allowed who) {
+        if (who == twitter::allowed::all)
+            return u("all");
+        else if (who == twitter::allowed::following)
+            return u("following");
+        else
+            return u("none");
+    };
+
+    const auto settings = client->get_account_settings();
     if (!settings) {
         std::cout << "Failed." << std::endl;
 
@@ -172,8 +171,12 @@ int main(int argc, char *argv[])
           << "sleep_time:" << std::endl
           << "  enabled: " << settings->sleep_time().is_enabled() << std::endl
           << "  start_time: "
-          << hour_to_string(settings->sleep_time().start_time()) << std::endl
-          << "  end_time: " << hour_to_string(settings->sleep_time().end_time())
+          << hour_to_string(settings->sleep_time().is_enabled(),
+                            settings->sleep_time().start_time())
+          << std::endl
+          << "  end_time: "
+          << hour_to_string(settings->sleep_time().is_enabled(),
+                            settings->sleep_time().end_time())
           << std::endl
           << u("geo_enabled: ") << settings->is_geo_enabled() << std::endl
           << u("language: ") << language_to_string(settings->language())

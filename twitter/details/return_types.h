@@ -48,8 +48,8 @@ enum class language : std::uint8_t {
     nl,
     fil,
     msa,
-    zh_tw, // zh-TW
-    zh_cn, // zh-CN
+    zh_tw, // zh-tw
+    zh_cn, // zh-cn
     hi,
     no,
     sv,
@@ -63,13 +63,12 @@ enum class language : std::uint8_t {
     uk,
     cs,
     ro,
-    en_gb, // en-GB
+    en_gb, // en-gb
     vi,
     bn
 };
 
 enum class hour : std::int8_t {
-    null = -1,
     _00 = 0,
     _01 = 1,
     _02 = 2,
@@ -122,7 +121,11 @@ class connections {
 
 class friendship {
   public:
-    friendship() {}
+    friendship(const string_t &name, const string_t &screen_name,
+               std::uint64_t id, const string_t &id_str,
+               const class connections &connections)
+        : name_(name), screen_name_(screen_name), id_str_(id_str), id_(id),
+          connections_(connections) {}
     friendship(friendship &&other) noexcept
         : name_(std::move(other.name_)),
           screen_name_(std::move(other.screen_name_)),
@@ -137,8 +140,6 @@ class friendship {
     const class connections &connections() const { return connections_; }
 
   private:
-    friend class twitter_client;
-
     string_t name_;
     string_t screen_name_;
     string_t id_str_;
@@ -151,10 +152,9 @@ class language_info {
     language_info(const string_t &code, const string_t &name,
                   const string_t &status)
         : code_(code), name_(name), status_(status) {}
-
-    // void set_code(const string_t &code) { code_ = code; }
-    // void set_name(const string_t &name) { name_ = name; }
-    // void set_status(const string_t &status) { status_ = status; }
+    language_info(language_info &&other)
+        : code_(std::move(other.code_)), name_(std::move(other.name_)),
+          status_(std::move(other.status_)) {}
 
     const string_t &code() const { return code_; }
     const string_t &name() const { return name_; }
@@ -168,17 +168,16 @@ class language_info {
 
 class time_zone {
   public:
-    time_zone(){};
+    // time_zone(const string_t &name, const int utc_offset,
+    // const string_t &tzinfo_name)
+    // : utc_offset_(utc_offset), name_(name), tzinfo_name_(tzinfo_name) {}
     time_zone(time_zone &&other) noexcept
         : utc_offset_(other.utc_offset_),
           name_(std::move(other.name_)),
           tzinfo_name_(std::move(other.tzinfo_name_)) {}
-    time_zone(const string_t &name, const int utc_offset,
-              const string_t &tzinfo_name)
-        : utc_offset_(utc_offset), name_(name), tzinfo_name_(tzinfo_name) {}
-    time_zone(string_t &&name, const int utc_offset, string_t &&tzinfo_name)
-        : utc_offset_(utc_offset), name_(std::move(name)),
-          tzinfo_name_(std::move(tzinfo_name)) {}
+    // time_zone(string_t &&name, const int utc_offset, string_t &&tzinfo_name)
+    // : utc_offset_(utc_offset), name_(std::move(name)),
+    // tzinfo_name_(std::move(tzinfo_name)) {}
 
     // void set_utc_offset(const int utc_offset) { utc_offset_ = utc_offset; }
     // void set_name(const string_t &name) { name_ = name; }
@@ -192,6 +191,9 @@ class time_zone {
 
   private:
     friend class twitter_client;
+    friend class account_settings;
+
+    time_zone() {}
 
     int utc_offset_;
     string_t name_;
@@ -200,14 +202,8 @@ class time_zone {
 
 class sleep_time {
   public:
-    sleep_time() {}
-    sleep_time(const hour &start_time, const hour &end_time) {
-        if ((start_time != hour::null) && (end_time != hour::null)) {
-            start_time_ = start_time;
-            end_time_ = end_time;
-            enabled_ = true;
-        }
-    }
+    // sleep_time(const hour start_time, const hour end_time)
+    //  : enabled_(true), start_time_(start_time), end_time_(end_time) {}
 
     bool is_enabled() const { return enabled_; }
     hour start_time() const { return start_time_; }
@@ -215,15 +211,17 @@ class sleep_time {
 
   private:
     friend class twitter_client;
+    friend class account_settings;
 
-    bool enabled_ = false;
-    hour start_time_ = hour::null;
-    hour end_time_ = hour::null;
+    sleep_time() {}
+
+    bool enabled_;
+    hour start_time_;
+    hour end_time_;
 };
 
 class account_settings {
   public:
-    account_settings() {}
     account_settings(account_settings &&other) noexcept
         : protected_(other.protected_),
           geo_enabled_(other.geo_enabled_),
@@ -310,6 +308,8 @@ class account_settings {
   private:
     friend class twitter_client;
 
+    account_settings() {}
+
     bool protected_;
     bool geo_enabled_;
     bool always_use_https_;
@@ -331,15 +331,18 @@ class account_settings {
 
 class suggested_category {
   public:
-    suggested_category() {}
+    suggested_category(const string_t &name, const string_t &slug,
+                       const std::uint16_t size)
+        : size_(size), name_(name), slug_(slug) {}
+    suggested_category(suggested_category &&other)
+        : size_(other.size_), name_(std::move(other.name_)),
+          slug_(std::move(other.slug_)) {}
 
-    std::uint16_t size() const { return size_; }
     string_t name() const { return name_; }
     string_t slug() const { return slug_; }
+    std::uint16_t size() const { return size_; }
 
   private:
-    friend class twitter_client;
-
     std::uint16_t size_;
     string_t name_;
     string_t slug_;
@@ -361,7 +364,6 @@ class photo_size {
 
 class configuration {
   public:
-    configuration() {}
     configuration(configuration &&other) noexcept
         : dm_text_character_limit_(other.dm_text_character_limit_),
           characters_reserved_per_media_(other.characters_reserved_per_media_),
@@ -397,6 +399,8 @@ class configuration {
 
   private:
     friend class twitter_client;
+
+    configuration() {}
 
     std::uint16_t dm_text_character_limit_;
     std::uint16_t characters_reserved_per_media_;

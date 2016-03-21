@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    auto config = client->get_help_configuration();
+    const auto config = client->get_help_configuration();
     if (!config) {
         std::cout << "Failed." << std::endl;
 

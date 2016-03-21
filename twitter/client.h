@@ -187,7 +187,7 @@ class twitter_client {
     std::experimental::optional<account_settings> get_account_settings() const;
 
     std::vector<suggested_category>
-    get_users_suggestions(language lang = language::en) const;
+    get_users_suggestions(const language lang = language::en) const;
 
     std::experimental::optional<configuration> get_help_configuration() const;
     std::vector<language_info> get_help_languages() const;

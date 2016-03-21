@@ -127,37 +127,43 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
         std::vector<friendship> friendships;
 
         for (const auto &object : root.as_array()) {
-            friendship friendship;
-            friendship.name_ = object.at(u("name")).as_string();
-            friendship.screen_name_ = object.at(u("screen_name")).as_string();
-            friendship.id_ = object.at(u("id")).as_number().to_uint64();
-            friendship.id_str_ = object.at(u("id_str")).as_string();
+            const string_t &name = object.at(u("name")).as_string();
+            const string_t &screen_name =
+                object.at(u("screen_name")).as_string();
+            const std::uint64_t &id =
+                object.at(u("id")).as_number().to_uint64();
+            const string_t &id_str = object.at(u("id_str")).as_string();
 
-            const web::json::array &connections =
+            connections connections;
+
+            const web::json::array &connections_node =
                 object.at(u("connections")).as_array();
-            for (const auto &connection : connections) {
+            for (const auto &connection : connections_node) {
                 const string_t &connection_type = connection.as_string();
                 if (connection_type == u("none")) {
-                    friendship.connections_.none_ = true;
+                    connections.none_ = true;
 
                     break;
                 } else if (connection_type == u("following")) {
-                    friendship.connections_.following_ = true;
+                    connections.following_ = true;
                 } else if (connection_type == u("following_requested")) {
-                    friendship.connections_.following_requested_ = true;
+                    connections.following_requested_ = true;
                 } else if (connection_type == u("followed_by")) {
-                    friendship.connections_.followed_by_ = true;
+                    connections.followed_by_ = true;
                 } else if (connection_type == u("blocking")) {
-                    friendship.connections_.blocking_ = true;
+                    connections.blocking_ = true;
                 } else if (connection_type == u("muting")) {
-                    friendship.connections_.muting_ = true;
+                    connections.muting_ = true;
                 }
             }
 
-            friendships.emplace_back(std::move(friendship));
+            friendships.emplace_back(name, screen_name, id, id_str,
+                                     connections);
         }
 
         return std::move(friendships);
+    } catch (const web::uri_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
@@ -192,34 +198,38 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
         std::vector<friendship> friendships;
 
         for (const auto &object : root.as_array()) {
-            friendship friendship;
-            friendship.name_ = object.at(u("name")).as_string();
-            friendship.screen_name_ = object.at(u("screen_name")).as_string();
-            friendship.id_ = object.at(u("id")).as_number().to_uint64();
-            friendship.id_str_ = object.at(u("id_str")).as_string();
+            const string_t &name = object.at(u("name")).as_string();
+            const string_t &screen_name =
+                object.at(u("screen_name")).as_string();
+            const std::uint64_t &id =
+                object.at(u("id")).as_number().to_uint64();
+            const string_t &id_str = object.at(u("id_str")).as_string();
 
-            const web::json::array &connections =
+            connections connections;
+
+            const web::json::array &connections_node =
                 object.at(u("connections")).as_array();
-            for (const auto &connection : connections) {
+            for (const auto &connection : connections_node) {
                 const string_t &connection_type = connection.as_string();
                 if (connection_type == u("none")) {
-                    friendship.connections_.none_ = true;
+                    connections.none_ = true;
 
                     break;
                 } else if (connection_type == u("following")) {
-                    friendship.connections_.following_ = true;
+                    connections.following_ = true;
                 } else if (connection_type == u("following_requested")) {
-                    friendship.connections_.following_requested_ = true;
+                    connections.following_requested_ = true;
                 } else if (connection_type == u("followed_by")) {
-                    friendship.connections_.followed_by_ = true;
+                    connections.followed_by_ = true;
                 } else if (connection_type == u("blocking")) {
-                    friendship.connections_.blocking_ = true;
+                    connections.blocking_ = true;
                 } else if (connection_type == u("muting")) {
-                    friendship.connections_.muting_ = true;
+                    connections.muting_ = true;
                 }
             }
 
-            friendships.emplace_back(std::move(friendship));
+            friendships.emplace_back(name, screen_name, id, id_str,
+                                     connections);
         }
 
         return std::move(friendships);
@@ -263,7 +273,8 @@ twitter_client::get_account_settings() const {
             root.at(u("use_cookie_personalization")).as_bool();
 
         const web::json::value &sleep_time = root.at(u("sleep_time"));
-        if (sleep_time.at(u("enabled")).as_bool()) {
+        if ((settings.sleep_time_.enabled_ =
+                 sleep_time.at(u("enabled")).as_bool())) {
             settings.sleep_time_.start_time_ =
                 static_cast<hour>(sleep_time.at(u("start_time")).as_integer());
             settings.sleep_time_.end_time_ =
@@ -384,13 +395,85 @@ twitter_client::get_account_settings() const {
 }
 
 std::vector<suggested_category>
-twitter_client::get_users_suggestions(language lang) const {
+twitter_client::get_users_suggestions(const language lang) const {
+    auto language_to_string = [](const twitter::language lang) {
+        switch (lang) {
+        case twitter::language::fr:
+            return u("fr");
+        case twitter::language::en:
+            return u("en");
+        case twitter::language::ar:
+            return u("ar");
+        case twitter::language::ja:
+            return u("ja");
+        case twitter::language::es:
+            return u("es");
+        case twitter::language::de:
+            return u("de");
+        case twitter::language::it:
+            return u("it");
+        case twitter::language::id:
+            return u("id");
+        case twitter::language::pt:
+            return u("pt");
+        case twitter::language::ko:
+            return u("ko");
+        case twitter::language::tr:
+            return u("tr");
+        case twitter::language::ru:
+            return u("ru");
+        case twitter::language::nl:
+            return u("nl");
+        case twitter::language::fil:
+            return u("fil");
+        case twitter::language::msa:
+            return u("msa");
+        case twitter::language::zh_tw:
+            return u("zh-tw");
+        case twitter::language::zh_cn:
+            return u("zh-cn");
+        case twitter::language::hi:
+            return u("hi");
+        case twitter::language::no:
+            return u("no");
+        case twitter::language::sv:
+            return u("sv");
+        case twitter::language::fi:
+            return u("fi");
+        case twitter::language::da:
+            return u("da");
+        case twitter::language::pl:
+            return u("pl");
+        case twitter::language::hu:
+            return u("hu");
+        case twitter::language::fa:
+            return u("fa");
+        case twitter::language::he:
+            return u("he");
+        case twitter::language::th:
+            return u("th");
+        case twitter::language::uk:
+            return u("uk");
+        case twitter::language::cs:
+            return u("cs");
+        case twitter::language::ro:
+            return u("ro");
+        case twitter::language::en_gb:
+            return u("en-gb");
+        case twitter::language::vi:
+            return u("vi");
+        case twitter::language::bn:
+            return u("bn");
+        }
+    };
+
     web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
                                        http_client_config_);
 
     try {
+
         web::uri_builder builder(u("users/suggestions.json"));
-        builder.append_query(u("lang"), u("en"), false);
+        builder.append_query(u("lang"), language_to_string(lang), false);
 
         const web::json::value root =
             api.request(web::http::methods::GET, builder.to_string())
@@ -401,13 +484,12 @@ twitter_client::get_users_suggestions(language lang) const {
         std::vector<suggested_category> suggested_categories;
 
         for (const auto &object : root.as_array()) {
-            suggested_category category;
-            category.name_ = object.at(u("name")).as_string();
-            category.slug_ = object.at(u("slug")).as_string();
-            category.size_ =
+            const string_t &name = object.at(u("name")).as_string();
+            const string_t &slug = object.at(u("slug")).as_string();
+            const std::uint16_t size =
                 static_cast<std::uint16_t>(object.at(u("size")).as_integer());
 
-            suggested_categories.emplace_back(std::move(category));
+            suggested_categories.emplace_back(name, slug, size);
         }
 
         return std::move(suggested_categories);
@@ -492,9 +574,8 @@ twitter_client::get_help_configuration() const {
 
         const web::json::array &non_username_paths =
             root.at(u("non_username_paths")).as_array();
-        for (const auto &e : non_username_paths) {
+        for (const auto &e : non_username_paths)
             config.non_username_paths_.emplace_back(e.as_string());
-        }
 
         return std::experimental::make_optional(std::move(config));
     } catch (const web::http::http_exception &e) {
@@ -527,7 +608,7 @@ std::vector<language_info> twitter_client::get_help_languages() const {
             languages.emplace_back(code, name, status);
         }
 
-        return languages;
+        return std::move(languages);
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
