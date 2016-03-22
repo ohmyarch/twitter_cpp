@@ -394,6 +394,62 @@ twitter_client::get_account_settings() const {
     return std::experimental::optional<account_settings>();
 }
 
+std::vector<user> twitter_client::get_users_lookup(
+    const std::vector<string_t> &screen_names) const {
+    web::http::client::http_client api(u("https://api.twitter.com/1.1/"),
+                                       http_client_config_);
+
+    string_t query;
+    for (const auto &e : screen_names)
+        query += (e + web::uri::encode_data_string(u(",")));
+
+    query.resize(query.size() - 3);
+
+    try {
+        web::uri_builder builder(u("users/lookup.json"));
+        builder.append_query(u("screen_name"), query, false);
+
+        const web::json::value root =
+            api.request(web::http::methods::GET, builder.to_string())
+                .get()
+                .extract_json()
+                .get();
+
+        std::vector<user> users;
+
+        for (const auto &object : root.as_array()) {
+            user user;
+            user.name_ = object.at(u("name")).as_string();
+            user.profile_sidebar_fill_color_ =
+                object.at(u("profile_sidebar_fill_color")).as_string();
+            user.profile_background_tile_ =
+                object.at(u("profile_background_tile")).as_bool();
+            user.profile_sidebar_border_color_ =
+                object.at(u("profile_sidebar_border_color")).as_string();
+            user.profile_image_url_ =
+                object.at(u("profile_image_url")).as_string();
+            user.profile_image_url_https_ =
+                object.at(u("profile_image_url_https")).as_string();
+
+            users.emplace_back(std::move(user));
+        }
+
+        return std::move(users);
+    } catch (const web::uri_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    } catch (const web::http::http_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    } catch (const web::json::json_exception &e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+    return std::vector<user>();
+}
+std::vector<user> twitter_client::get_users_lookup(
+    const std::vector<std::uint64_t> &user_ids) const {
+    return std::vector<user>();
+}
+
 std::vector<suggested_category>
 twitter_client::get_users_suggestions(const language lang) const {
     auto language_to_string = [](const twitter::language lang) {

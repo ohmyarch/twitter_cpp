@@ -185,7 +185,7 @@ class time_zone {
     // tzinfo_name_ = tzinfo_name;
     // }
 
-    int utc_offset() const { return utc_offset_; }
+    std::int32_t utc_offset() const { return utc_offset_; }
     const string_t &name() const { return name_; }
     const string_t &tzinfo_name() const { return tzinfo_name_; }
 
@@ -195,7 +195,7 @@ class time_zone {
 
     time_zone() {}
 
-    int utc_offset_;
+    std::int32_t utc_offset_;
     string_t name_;
     string_t tzinfo_name_;
 };
@@ -327,6 +327,50 @@ class account_settings {
     class sleep_time sleep_time_;
 
     // bool protected_changed_;
+};
+
+class user {
+  public:
+    user(user &&other)
+        : name_(std::move(other.name_)),
+          profile_image_url_https_(std::move(other.profile_image_url_https_)) {}
+
+    const string_t &name() const { return name_; }
+    const string_t &profile_image_url_https() const {
+        return profile_image_url_https_;
+    }
+
+  private:
+    friend class twitter_client;
+
+    user() {}
+
+    bool profile_background_tile_;
+    bool follow_request_sent_;
+    bool is_translator_;
+    bool default_profile_;
+    bool contributors_enabled_;
+    bool profile_use_background_image_;
+    bool protected_;
+    bool geo_enabled_;
+    bool notifications_;
+    bool verified_;
+    bool default_profile_image_;
+    bool show_all_inline_media_;
+    bool following_;
+    std::uint32_t favourites_count_;
+    std::int32_t utc_offset_;
+    std::uint64_t id_;
+    string_t name_;
+    string_t profile_sidebar_fill_color_;
+    string_t profile_sidebar_border_color_;
+    string_t profile_image_url_;
+    string_t location_;
+    // date_time created_at_; // TODO
+    string_t id_str_;
+    string_t profile_link_color_;
+    string_t url_;
+    string_t profile_image_url_https_;
 };
 
 class suggested_category {

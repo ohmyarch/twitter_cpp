@@ -1,5 +1,6 @@
 add_executable(get_friendships_lookup common.cc get_friendships_lookup.cc)
 add_executable(get_account_settings common.cc get_account_settings.cc)
+add_executable(get_users_lookup common.cc get_users_lookup.cc)
 add_executable(get_users_suggestions common.cc get_users_suggestions.cc)
 add_executable(get_help_configuration common.cc get_help_configuration.cc)
 add_executable(get_help_languages common.cc get_help_languages.cc)
@@ -16,6 +17,7 @@ set(TWITTER_CPP_LIBRARYS
 
 target_link_libraries(get_friendships_lookup ${TWITTER_CPP_LIBRARYS})
 target_link_libraries(get_account_settings ${TWITTER_CPP_LIBRARYS})
+target_link_libraries(get_users_lookup ${TWITTER_CPP_LIBRARYS})
 target_link_libraries(get_users_suggestions ${TWITTER_CPP_LIBRARYS})
 target_link_libraries(get_help_configuration ${TWITTER_CPP_LIBRARYS})
 target_link_libraries(get_help_languages ${TWITTER_CPP_LIBRARYS})

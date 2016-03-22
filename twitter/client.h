@@ -182,12 +182,20 @@ class twitter_client {
     get_friendships_lookup(const std::vector<string_t> &screen_names) const;
     std::vector<friendship>
     get_friendships_lookup(const std::vector<std::uint64_t> &user_ids) const;
-    // void get_friendships_lookup(const std::vector<user> &users);
+    // void get_friendships_lookup(const std::vector<_user> &users);
 
     std::experimental::optional<account_settings> get_account_settings() const;
 
+    // up to 100 users per request
+    std::vector<user>
+    get_users_lookup(const std::vector<string_t> &screen_names) const;
+    // up to 100 users per request
+    std::vector<user>
+    get_users_lookup(const std::vector<std::uint64_t> &user_ids) const;
     std::vector<suggested_category>
     get_users_suggestions(const language lang = language::en) const;
+    // std::vector<int>
+    // get_users_suggestions_slug(const language lang = language::en) const;
 
     std::experimental::optional<configuration> get_help_configuration() const;
     std::vector<language_info> get_help_languages() const;
