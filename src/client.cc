@@ -428,6 +428,14 @@ std::vector<user> twitter_client::get_users_lookup(
                 object.at(u("profile_sidebar_border_color")).as_string();
             user.profile_image_url_ =
                 object.at(u("profile_image_url")).as_string();
+            user.location_ = object.at(u("location")).as_string();
+
+            std::locale::global(std::locale("en_US.utf8"));
+            std::tm time;
+            char buffer[100] = {0};
+            std::strcpy(buffer, "2012-01-01 14:00:00");
+            // std::strptime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &time);
+
             user.profile_image_url_https_ =
                 object.at(u("profile_image_url_https")).as_string();
 
