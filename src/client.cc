@@ -430,14 +430,69 @@ std::vector<user> twitter_client::get_users_lookup(
                 object.at(u("profile_image_url")).as_string();
             user.location_ = object.at(u("location")).as_string();
 
-            std::locale::global(std::locale("en_US.utf8"));
-            std::tm time;
-            char buffer[100] = {0};
-            std::strcpy(buffer, "2012-01-01 14:00:00");
-            // std::strptime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &time);
+            std::vector<string_t> created_at(6);
+            boost::split(created_at, object.at(u("created_at")).as_string(),
+                         boost::is_any_of(u(" ")));
+            const std::uint16_t year =
+                static_cast<std::uint16_t>(std::stoi(created_at[5]));
 
-            user.profile_image_url_https_ =
-                object.at(u("profile_image_url_https")).as_string();
+            std::uint16_t month;
+            const string_t &month_str = created_at[1];
+            if (month_str == "Jan")
+                month = 1;
+            else if (month_str == "Feb")
+                month = 2;
+            else if (month_str == "Mar")
+                month = 3;
+            else if (month_str == "Apr")
+                month = 4;
+            else if (month_str == "May")
+                month = 5;
+            else if (month_str == "Jun")
+                month = 6;
+            else if (month_str == "Jul")
+                month = 7;
+            else if (month_str == "Aug")
+                month = 8;
+            else if (month_str == "Sep")
+                month = 9;
+            else if (month_str == "Oct")
+                month = 10;
+            else if (month_str == "Nov")
+                month = 11;
+            else
+                month = 12;
+
+            const std::uint16_t day =
+                static_cast<std::uint16_t>(std::stoi(created_at[2]));
+
+            std::vector<string_t> time(3);
+            boost::split(time, created_at[3], boost::is_any_of(u(":")));
+            const std::uint16_t hour =
+                static_cast<std::uint16_t>(std::stoi(time[0]));
+            const std::uint16_t minute =
+                static_cast<std::uint16_t>(std::stoi(time[1]));
+            const std::uint16_t second =
+                static_cast<std::uint16_t>(std::stoi(time[2]));
+
+            const std::int32_t utc_offset =
+                std::stoi(created_at[4].substr(1, 2)) * 3600;
+
+            user.created_at_ =
+                date_time(year, month, day, hour, minute, second, utc_offset);
+
+            user.follow_request_sent_ =
+                object.at(u("follow_request_sent")).as_bool();
+            user.id_str_ = object.at(u("id_str")).as_string();
+            user.profile_link_color_ =
+                object.at(u("profile_link_color")).as_string();
+            user.is_translator_ = object.at(u("is_translator")).as_bool();
+            user.default_profile_ = object.at(u("default_profile")).as_bool();
+            user.favourites_count_ = static_cast<std::uint32_t>(
+                object.at(u("favourites_count")).as_integer());
+            user.contributors_enabled_ =
+                object.at(u("contributors_enabled")).as_bool();
+            // user.url_ = object.at(u("url")).as_string();
 
             users.emplace_back(std::move(user));
         }

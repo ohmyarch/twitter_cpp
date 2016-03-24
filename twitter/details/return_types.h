@@ -329,6 +329,37 @@ class account_settings {
     // bool protected_changed_;
 };
 
+class date_time {
+  public:
+    std::uint16_t year() const { return year_; }
+    std::uint16_t month() const { return month_; }
+    std::uint16_t day() const { return day_; }
+    std::uint16_t hour() const { return hour_; }
+    std::uint16_t minute() const { return minute_; }
+    std::uint16_t second() const { return second_; }
+    std::int32_t utc_offset() const { return utc_offset_; }
+
+  private:
+    friend class user;
+    friend class twitter_client;
+
+    date_time() {}
+    date_time(const std::uint16_t year, const std::uint16_t month,
+              const std::uint16_t day, const std::uint16_t hour,
+              const std::uint16_t minute, const std::uint16_t second,
+              const std::int32_t utc_offset)
+        : year_(year), month_(month), day_(day), hour_(hour), minute_(minute),
+          second_(second), utc_offset_(utc_offset) {}
+
+    std::uint16_t year_;
+    std::uint16_t month_;
+    std::uint16_t day_;
+    std::uint16_t hour_;
+    std::uint16_t minute_;
+    std::uint16_t second_;
+    std::int32_t utc_offset_;
+};
+
 class user {
   public:
     user(user &&other)
@@ -336,6 +367,7 @@ class user {
           profile_image_url_https_(std::move(other.profile_image_url_https_)) {}
 
     const string_t &name() const { return name_; }
+    const date_time &created_at() const { return created_at_; }
     const string_t &profile_image_url_https() const {
         return profile_image_url_https_;
     }
@@ -361,12 +393,12 @@ class user {
     std::uint32_t favourites_count_;
     std::int32_t utc_offset_;
     std::uint64_t id_;
+    date_time created_at_;
     string_t name_;
     string_t profile_sidebar_fill_color_;
     string_t profile_sidebar_border_color_;
     string_t profile_image_url_;
     string_t location_;
-    // date_time created_at_; // TODO
     string_t id_str_;
     string_t profile_link_color_;
     string_t url_;
