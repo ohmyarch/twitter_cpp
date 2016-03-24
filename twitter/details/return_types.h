@@ -391,7 +391,7 @@ class user {
     bool show_all_inline_media_;
     bool following_;
     std::uint32_t favourites_count_;
-    std::int32_t utc_offset_;
+    std::int32_t utc_offset_; // nullable
     std::uint64_t id_;
     date_time created_at_;
     string_t name_;

@@ -475,11 +475,11 @@ std::vector<user> twitter_client::get_users_lookup(
             const std::uint16_t second =
                 static_cast<std::uint16_t>(std::stoi(time[2]));
 
-            const std::int32_t utc_offset =
+            const std::int32_t offset =
                 std::stoi(created_at[4].substr(1, 2)) * 3600;
 
             user.created_at_ =
-                date_time(year, month, day, hour, minute, second, utc_offset);
+                date_time(year, month, day, hour, minute, second, offset);
 
             user.follow_request_sent_ =
                 object.at(u("follow_request_sent")).as_bool();
@@ -492,7 +492,21 @@ std::vector<user> twitter_client::get_users_lookup(
                 object.at(u("favourites_count")).as_integer());
             user.contributors_enabled_ =
                 object.at(u("contributors_enabled")).as_bool();
-            // user.url_ = object.at(u("url")).as_string();
+
+            const web::json::value &url = object.at(u("url"));
+            if (!url.is_null())
+                user.url_ = url.as_string();
+
+            user.profile_image_url_https_ =
+                object.at(u("profile_image_url_https")).as_string();
+
+            const web::json::value &utc_offset = object.at(u("utc_offset"));
+            if (!utc_offset.is_null())
+                user.utc_offset_ = utc_offset.as_integer();
+
+            user.id_ = object.at(u("id")).as_number().to_uint64();
+            user.profile_use_background_image_ =
+                object.at(u("profile_use_background_image")).as_bool();
 
             users.emplace_back(std::move(user));
         }
@@ -508,6 +522,7 @@ std::vector<user> twitter_client::get_users_lookup(
 
     return std::vector<user>();
 }
+
 std::vector<user> twitter_client::get_users_lookup(
     const std::vector<std::uint64_t> &user_ids) const {
     return std::vector<user>();
