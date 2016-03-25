@@ -264,11 +264,8 @@ twitter_client::get_account_settings() const {
             time_zone.at(u("tzinfo_name")).as_string();
 
         settings.protected_ = root.at(u("protected")).as_bool();
-
         settings.screen_name_ = root.at(u("screen_name")).as_string();
-
         settings.always_use_https_ = root.at(u("always_use_https")).as_bool();
-
         settings.use_cookie_personalization_ =
             root.at(u("use_cookie_personalization")).as_bool();
 
@@ -351,19 +348,15 @@ twitter_client::get_account_settings() const {
 
             return language::bn;
         };
-
         settings.language_ =
             string_to_language(root.at(u("language")).as_string());
 
         settings.discoverable_by_email_ =
             root.at(u("discoverable_by_email")).as_bool();
-
         settings.discoverable_by_mobile_phone_ =
             root.at(u("discoverable_by_mobile_phone")).as_bool();
-
         settings.display_sensitive_media_ =
             root.at(u("display_sensitive_media")).as_bool();
-
         settings.smart_mute_ = root.at(u("smart_mute")).as_bool();
 
         auto string_to_allowed = [](const string_t &str) {
@@ -374,13 +367,10 @@ twitter_client::get_account_settings() const {
 
             return allowed::none;
         };
-
         settings.allow_contributor_request_ = string_to_allowed(
             root.at(u("allow_contributor_request")).as_string());
-
         settings.allow_dms_from_ =
             string_to_allowed(root.at(u("allow_dms_from")).as_string());
-
         settings.allow_dm_groups_from_ =
             string_to_allowed(root.at(u("allow_dm_groups_from")).as_string());
 
@@ -481,15 +471,18 @@ std::vector<user> twitter_client::get_users_lookup(
             user.created_at_ =
                 date_time(year, month, day, hour, minute, second, offset);
 
-            user.follow_request_sent_ =
-                object.at(u("follow_request_sent")).as_bool();
+            const web::json::value &follow_request_sent =
+                object.at(u("follow_request_sent"));
+            if (!follow_request_sent.is_null())
+                user.follow_request_sent_ = follow_request_sent.as_bool();
+
             user.id_str_ = object.at(u("id_str")).as_string();
             user.profile_link_color_ =
                 object.at(u("profile_link_color")).as_string();
             user.is_translator_ = object.at(u("is_translator")).as_bool();
             user.default_profile_ = object.at(u("default_profile")).as_bool();
-            user.favourites_count_ = static_cast<std::uint32_t>(
-                object.at(u("favourites_count")).as_integer());
+            user.favourites_count_ =
+                object.at(u("favourites_count")).as_number().to_uint32();
             user.contributors_enabled_ =
                 object.at(u("contributors_enabled")).as_bool();
 
@@ -507,6 +500,92 @@ std::vector<user> twitter_client::get_users_lookup(
             user.id_ = object.at(u("id")).as_number().to_uint64();
             user.profile_use_background_image_ =
                 object.at(u("profile_use_background_image")).as_bool();
+            user.listed_count_ =
+                object.at(u("listed_count")).as_number().to_uint32();
+
+            auto string_to_language = [](const string_t &str) {
+                if (str == "fr")
+                    return language::fr;
+                if (str == "en")
+                    return language::en;
+                if (str == "ar")
+                    return language::ar;
+                if (str == "ja")
+                    return language::ja;
+                if (str == "es")
+                    return language::es;
+                if (str == "de")
+                    return language::de;
+                if (str == "it")
+                    return language::it;
+                if (str == "id")
+                    return language::id;
+                if (str == "pt")
+                    return language::pt;
+                if (str == "ko")
+                    return language::ko;
+                if (str == "tr")
+                    return language::tr;
+                if (str == "ru")
+                    return language::ru;
+                if (str == "nl")
+                    return language::nl;
+                if (str == "fil")
+                    return language::fil;
+                if (str == "msa")
+                    return language::msa;
+                if (str == "zh-TW")
+                    return language::zh_tw;
+                if (str == "zh-CN")
+                    return language::zh_cn;
+                if (str == "hi")
+                    return language::hi;
+                if (str == "no")
+                    return language::no;
+                if (str == "sv")
+                    return language::sv;
+                if (str == "fi")
+                    return language::fi;
+                if (str == "da")
+                    return language::da;
+                if (str == "pl")
+                    return language::pl;
+                if (str == "hu")
+                    return language::hu;
+                if (str == "fa")
+                    return language::fa;
+                if (str == "he")
+                    return language::he;
+                if (str == "th")
+                    return language::th;
+                if (str == "uk")
+                    return language::uk;
+                if (str == "cs")
+                    return language::cs;
+                if (str == "ro")
+                    return language::ro;
+                if (str == "en_GB")
+                    return language::en_gb;
+                if (str == "vi")
+                    return language::vi;
+
+                return language::bn;
+            };
+            user.lang_ = string_to_language(root.at(u("lang")).as_string());
+
+            user.followers_count_ =
+                root.at(u("followers_count")).as_number().to_uint64();
+            user.protected_ = root.at(u("protected")).as_bool();
+            user.profile_background_image_url_https_ =
+                root.at(u("profile_background_image_url_https")).as_bool();
+            user.geo_enabled_ = root.at(u("geo_enabled")).as_bool();
+
+            const web::json::value &description = object.at(u("description"));
+            if (!description.is_null())
+                user.description_ = description.as_string();
+
+            user.description_ = root.at(u("description")).as_string();
+            user.verified_ = root.at(u("verified")).as_bool();
 
             users.emplace_back(std::move(user));
         }

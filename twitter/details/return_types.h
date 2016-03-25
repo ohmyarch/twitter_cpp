@@ -378,21 +378,24 @@ class user {
     user() {}
 
     bool profile_background_tile_;
-    bool follow_request_sent_;
+    bool follow_request_sent_; // nullable
     bool is_translator_;
     bool default_profile_;
     bool contributors_enabled_;
     bool profile_use_background_image_;
     bool protected_;
     bool geo_enabled_;
-    bool notifications_;
     bool verified_;
     bool default_profile_image_;
     bool show_all_inline_media_;
-    bool following_;
-    std::uint32_t favourites_count_;
+    // bool following_; // deprecated
+    // bool notifications_; // deprecated
+    language lang_;
     std::int32_t utc_offset_; // nullable
+    std::uint32_t favourites_count_;
+    std::uint32_t listed_count_;
     std::uint64_t id_;
+    std::uint64_t followers_count_;
     date_time created_at_;
     string_t name_;
     string_t profile_sidebar_fill_color_;
@@ -403,6 +406,10 @@ class user {
     string_t profile_link_color_;
     string_t url_;
     string_t profile_image_url_https_;
+    string_t profile_text_color_;
+    string_t profile_background_image_url_https_;
+    string_t description_; // nullable
+    string_t profile_background_color_;
 };
 
 class suggested_category {
