@@ -43,7 +43,7 @@ int wmain(int argc, wchar_t *argv[])
 int main(int argc, char *argv[])
 #endif
 {
-    const auto init = ::init(argc, argv, "get_user_suggestions");
+    const auto init = ::init(argc, argv, "get_users_suggestions_slug");
     init_flag flag = std::get<0>(init);
     if (flag == init_flag::error)
         return 1;

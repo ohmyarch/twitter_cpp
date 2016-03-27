@@ -394,8 +394,10 @@ class user {
     std::int32_t utc_offset_; // nullable
     std::uint32_t favourites_count_;
     std::uint32_t listed_count_;
+    std::uint32_t followers_count_;
+    std::uint32_t statuses_count_;
+    std::uint32_t friends_count_;
     std::uint64_t id_;
-    std::uint64_t followers_count_;
     date_time created_at_;
     string_t name_;
     string_t profile_sidebar_fill_color_;
@@ -410,6 +412,9 @@ class user {
     string_t profile_background_image_url_https_;
     string_t description_; // nullable
     string_t profile_background_color_;
+    string_t time_zone_; // nullable
+    string_t profile_background_image_url_;
+    string_t screen_name_;
 };
 
 class suggested_category {

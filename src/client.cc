@@ -571,21 +571,38 @@ std::vector<user> twitter_client::get_users_lookup(
 
                 return language::bn;
             };
-            user.lang_ = string_to_language(root.at(u("lang")).as_string());
+            user.lang_ = string_to_language(object.at(u("lang")).as_string());
 
             user.followers_count_ =
-                root.at(u("followers_count")).as_number().to_uint64();
-            user.protected_ = root.at(u("protected")).as_bool();
+                object.at(u("followers_count")).as_number().to_uint64();
+            user.protected_ = object.at(u("protected")).as_bool();
             user.profile_background_image_url_https_ =
-                root.at(u("profile_background_image_url_https")).as_bool();
-            user.geo_enabled_ = root.at(u("geo_enabled")).as_bool();
+                object.at(u("profile_background_image_url_https")).as_bool();
+            user.geo_enabled_ = object.at(u("geo_enabled")).as_bool();
 
             const web::json::value &description = object.at(u("description"));
             if (!description.is_null())
                 user.description_ = description.as_string();
 
-            user.description_ = root.at(u("description")).as_string();
-            user.verified_ = root.at(u("verified")).as_bool();
+            user.profile_background_color_ =
+                object.at(u("profile_background_color")).as_string();
+            user.verified_ = object.at(u("verified")).as_bool();
+
+            const web::json::value &time_zone = object.at(u("time_zone"));
+            if (!time_zone.is_null())
+                user.time_zone_ = time_zone.as_string();
+
+            user.statuses_count_ =
+                object.at(u("statuses_count")).as_number().to_uint32();
+            user.profile_background_image_url_ =
+                object.at(u("profile_background_image_url")).as_string();
+            user.default_profile_image_ =
+                object.at(u("default_profile_image")).as_bool();
+            user.friends_count_ =
+                object.at(u("friends_count")).as_number().to_uint32();
+            user.screen_name_ = object.at(u("screen_name")).as_string();
+            user.show_all_inline_media_ =
+                object.at(u("show_all_inline_media")).as_bool();
 
             users.emplace_back(std::move(user));
         }
