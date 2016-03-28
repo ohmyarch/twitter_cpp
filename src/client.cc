@@ -604,6 +604,15 @@ std::vector<user> twitter_client::get_users_lookup(
             user.show_all_inline_media_ =
                 object.at(u("show_all_inline_media")).as_bool();
 
+            if (object.has_field(u("status"))) {
+                const web::json::value &status = object.at(u("status"));
+                if (!status.is_null()) {
+                    const web::json::object &status_object = status.as_object();
+                    if (!status_object.empty())
+                        ;
+                }
+            }
+
             users.emplace_back(std::move(user));
         }
 
