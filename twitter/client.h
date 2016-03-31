@@ -31,7 +31,6 @@
 #include "twitter/details/return_types.h"
 #include <cpprest/http_client.h>
 #include <cpprest/oauth1.h>
-#include <experimental/optional>
 
 namespace twitter {
 // enum class error : std::uint8_t {};

@@ -28,8 +28,9 @@
 
 #pragma once
 
-#include "twitter/details/basic_types.h"
 #include <vector>
+#include <experimental/optional>
+#include "twitter/details/basic_types.h"
 
 namespace twitter {
 enum class language : std::uint8_t {
@@ -366,10 +367,42 @@ class user {
         : name_(std::move(other.name_)),
           profile_image_url_https_(std::move(other.profile_image_url_https_)) {}
 
-    const string_t &name() const { return name_; }
+    bool is_profile_background_tile() const { return profile_background_tile_; }
+    bool is_follow_request_sent() const { return follow_request_sent_; }
+    bool is_translator() const { return is_translator_; }
+    bool is_default_profile() const { return default_profile_; }
+    bool is_contributors_enabled() const { return contributors_enabled_; }
+    bool is_profile_use_background_image() const {
+        return profile_use_background_image_;
+    }
+    bool is_protected() const { return protected_; }
+    bool geo_enabled() const { return geo_enabled_; }
+    bool verified() const { return verified_; }
+    bool default_profile_image() const { return default_profile_image_; }
+    bool show_all_inline_media() const { return show_all_inline_media_; }
+    language lang() const { return lang_; }
     const date_time &created_at() const { return created_at_; }
-    const string_t &profile_image_url_https() const {
-        return profile_image_url_https_;
+    std::uint32_t favourites_count() const { return favourites_count_; }
+    std::uint32_t listed_count() const { return listed_count_; }
+    std::uint32_t followers_count() const { return followers_count_; }
+    std::uint32_t statuses_count() const { return statuses_count_; }
+    std::uint32_t friends_count() const { return friends_count_; }
+    std::uint64_t id() const { return id_; }
+    const string_t &name() const { return name_; }
+    const string_t &profile_sidebar_fill_color() const {
+        return profile_sidebar_fill_color_;
+    }
+    const string_t &profile_sidebar_fill_color() const {
+        return profile_sidebar_fill_color_;
+    }
+    const string_t &profile_sidebar_border_color() const {
+        return profile_sidebar_border_color_;
+    }
+    const string_t &profile_image_url() const { return profile_image_url_; }
+    const string_t &id_str() const { return id_str_; }
+    const string_t &profile_link_color() const { return profile_link_color_; }
+    const std::experimental::optional<std::int32_t> &utc_offset() const {
+        return utc_offset_;
     }
 
   private:
@@ -377,8 +410,9 @@ class user {
 
     user() {}
 
+    // bool following_; // deprecated
+    // bool notifications_; // deprecated
     bool profile_background_tile_;
-    bool follow_request_sent_; // nullable
     bool is_translator_;
     bool default_profile_;
     bool contributors_enabled_;
@@ -388,10 +422,7 @@ class user {
     bool verified_;
     bool default_profile_image_;
     bool show_all_inline_media_;
-    // bool following_; // deprecated
-    // bool notifications_; // deprecated
     language lang_;
-    std::int32_t utc_offset_; // nullable
     std::uint32_t favourites_count_;
     std::uint32_t listed_count_;
     std::uint32_t followers_count_;
@@ -403,18 +434,20 @@ class user {
     string_t profile_sidebar_fill_color_;
     string_t profile_sidebar_border_color_;
     string_t profile_image_url_;
-    string_t location_;
     string_t id_str_;
     string_t profile_link_color_;
     string_t url_;
     string_t profile_image_url_https_;
     string_t profile_text_color_;
     string_t profile_background_image_url_https_;
-    string_t description_; // nullable
     string_t profile_background_color_;
-    string_t time_zone_; // nullable
     string_t profile_background_image_url_;
     string_t screen_name_;
+    std::experimental::optional<bool> follow_request_sent_; // nullable
+    std::experimental::optional<std::int32_t> utc_offset_;  // nullable
+    std::experimental::optional<string_t> location_;        // nullable
+    std::experimental::optional<string_t> time_zone_;       // nullable
+    std::experimental::optional<string_t> description_;     // nullable
 };
 
 class suggested_category {

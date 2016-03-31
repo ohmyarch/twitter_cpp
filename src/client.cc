@@ -27,6 +27,7 @@
 ****************************************************************************/
 
 #include "twitter/client.h"
+#include <boost/optional.hpp>
 #include <boost/lexical_cast.hpp>
 #include <cpprest/http_listener.h>
 #include <cpprest/json.h>
@@ -608,8 +609,9 @@ std::vector<user> twitter_client::get_users_lookup(
                 const web::json::value &status = object.at(u("status"));
                 if (!status.is_null()) {
                     const web::json::object &status_object = status.as_object();
-                    if (!status_object.empty())
+                    if (!status_object.empty()) {
                         ;
+                    }
                 }
             }
 
