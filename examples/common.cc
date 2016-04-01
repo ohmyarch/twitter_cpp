@@ -42,10 +42,10 @@ std::experimental::optional<twitter::twitter_client>
 auth(const twitter::string_t &proxy_uri) {
     twitter::twitter_client client(consumer_key, consumer_secret, u("oob"));
     if (proxy_uri.empty())
-        return std::experimental::optional<twitter::twitter_client>();
+        return {};
 
     if (!client.set_proxy(proxy_uri))
-        return std::experimental::optional<twitter::twitter_client>();
+        return {};
 
     twitter::string_t access_token;
     twitter::string_t access_token_secret;
@@ -68,7 +68,7 @@ auth(const twitter::string_t &proxy_uri) {
         twitter::string_t auth_uri = client.build_authorization_uri();
 
         if (auth_uri.empty())
-            return std::experimental::optional<twitter::twitter_client>();
+            return {};
 
         open_browser(auth_uri);
 
@@ -78,7 +78,7 @@ auth(const twitter::string_t &proxy_uri) {
         ucin >> pin;
 
         if (!client.token_from_pin(std::move(pin)))
-            return std::experimental::optional<twitter::twitter_client>();
+            return {};
 
         token = client.token();
 
@@ -89,7 +89,7 @@ auth(const twitter::string_t &proxy_uri) {
         access_token_secret_file << token.secret();
     }
 
-    return std::experimental::make_optional(client);
+    return client;
 }
 
 std::pair<init_flag, twitter::string_t>

@@ -73,7 +73,7 @@ string_t twitter_client::build_authorization_uri() {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return u("");
+    return {};
 }
 
 bool twitter_client::token_from_pin(const string_t &pin) {
@@ -162,7 +162,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
                                      connections);
         }
 
-        return std::move(friendships);
+        return friendships;
     } catch (const web::uri_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::http::http_exception &e) {
@@ -171,7 +171,7 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return std::vector<friendship>();
+    return {};
 }
 
 std::vector<friendship> twitter_client::get_friendships_lookup(
@@ -233,14 +233,14 @@ std::vector<friendship> twitter_client::get_friendships_lookup(
                                      connections);
         }
 
-        return std::move(friendships);
+        return friendships;
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return std::vector<friendship>();
+    return {};
 }
 
 std::experimental::optional<account_settings>
@@ -375,14 +375,14 @@ twitter_client::get_account_settings() const {
         settings.allow_dm_groups_from_ =
             string_to_allowed(root.at(u("allow_dm_groups_from")).as_string());
 
-        return std::experimental::make_optional(std::move(settings));
+        return settings;
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return std::experimental::optional<account_settings>();
+    return {};
 }
 
 std::vector<user> twitter_client::get_users_lookup(
@@ -618,7 +618,7 @@ std::vector<user> twitter_client::get_users_lookup(
             users.emplace_back(std::move(user));
         }
 
-        return std::move(users);
+        return users;
     } catch (const web::uri_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::http::http_exception &e) {
@@ -627,12 +627,12 @@ std::vector<user> twitter_client::get_users_lookup(
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return std::vector<user>();
+    return {};
 }
 
 std::vector<user> twitter_client::get_users_lookup(
     const std::vector<std::uint64_t> &user_ids) const {
-    return std::vector<user>();
+    return {};
 }
 
 std::vector<suggested_category>
@@ -733,14 +733,14 @@ twitter_client::get_users_suggestions(const language lang) const {
             suggested_categories.emplace_back(name, slug, size);
         }
 
-        return std::move(suggested_categories);
+        return suggested_categories;
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return std::vector<suggested_category>();
+    return {};
 }
 
 std::experimental::optional<configuration>
@@ -818,14 +818,14 @@ twitter_client::get_help_configuration() const {
         for (const auto &e : non_username_paths)
             config.non_username_paths_.emplace_back(e.as_string());
 
-        return std::experimental::make_optional(std::move(config));
+        return config;
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return std::experimental::optional<configuration>();
+    return {};
 }
 
 std::vector<language_info> twitter_client::get_help_languages() const {
@@ -849,14 +849,14 @@ std::vector<language_info> twitter_client::get_help_languages() const {
             languages.emplace_back(code, name, status);
         }
 
-        return std::move(languages);
+        return languages;
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return std::vector<language_info>();
+    return {};
 }
 
 string_t twitter_client::get_help_privacy() const {
@@ -877,7 +877,7 @@ string_t twitter_client::get_help_privacy() const {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return u("");
+    return {};
 }
 
 string_t twitter_client::get_help_tos() const {
@@ -898,6 +898,6 @@ string_t twitter_client::get_help_tos() const {
         std::cout << "Error: " << e.what() << std::endl;
     }
 
-    return u("");
+    return {};
 }
 }

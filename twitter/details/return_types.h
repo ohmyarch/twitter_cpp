@@ -368,7 +368,6 @@ class user {
           profile_image_url_https_(std::move(other.profile_image_url_https_)) {}
 
     bool is_profile_background_tile() const { return profile_background_tile_; }
-    bool is_follow_request_sent() const { return follow_request_sent_; }
     bool is_translator() const { return is_translator_; }
     bool is_default_profile() const { return default_profile_; }
     bool is_contributors_enabled() const { return contributors_enabled_; }
@@ -392,17 +391,41 @@ class user {
     const string_t &profile_sidebar_fill_color() const {
         return profile_sidebar_fill_color_;
     }
-    const string_t &profile_sidebar_fill_color() const {
-        return profile_sidebar_fill_color_;
-    }
     const string_t &profile_sidebar_border_color() const {
         return profile_sidebar_border_color_;
     }
     const string_t &profile_image_url() const { return profile_image_url_; }
     const string_t &id_str() const { return id_str_; }
     const string_t &profile_link_color() const { return profile_link_color_; }
+    const string_t &url() const { return url_; }
+    const string_t &profile_image_url_https() const {
+        return profile_image_url_https_;
+    }
+    const string_t &profile_text_color() const { return profile_text_color_; }
+    const string_t &profile_background_image_url_https() const {
+        return profile_background_image_url_https_;
+    }
+    const string_t &profile_background_color() const {
+        return profile_background_color_;
+    }
+    const string_t &profile_background_image_url() const {
+        return profile_background_image_url_;
+    }
+    const string_t &screen_name() const { return screen_name_; }
+    const std::experimental::optional<bool> &follow_request_sent() const {
+        return follow_request_sent_;
+    }
     const std::experimental::optional<std::int32_t> &utc_offset() const {
         return utc_offset_;
+    }
+    const std::experimental::optional<string_t> &location() const {
+        return location_;
+    }
+    const std::experimental::optional<string_t> &time_zone() const {
+        return time_zone_;
+    }
+    const std::experimental::optional<string_t> &description() const {
+        return description_;
     }
 
   private:
@@ -410,7 +433,7 @@ class user {
 
     user() {}
 
-    // bool following_; // deprecated
+    // bool following_;     // deprecated
     // bool notifications_; // deprecated
     bool profile_background_tile_;
     bool is_translator_;
