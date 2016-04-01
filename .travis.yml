@@ -58,7 +58,6 @@ before_install:
       cd ../../twitter_cpp;
     else
       brew update &&
-      brew install cmake &&
       brew install cpprestsdk &&
       brew link --force openssl;
     fi
