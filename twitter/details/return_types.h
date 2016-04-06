@@ -364,8 +364,12 @@ class date_time {
 class user {
   public:
     user(user &&other)
-        : name_(std::move(other.name_)),
-          profile_image_url_https_(std::move(other.profile_image_url_https_)) {}
+        : id_(other.id_), id_str_(std::move(other.id_str_)),
+          name_(std::move(other.name_)),
+          screen_name_(std::move(other.screen_name_)),
+          profile_image_url_https_(std::move(other.profile_image_url_https_)),
+          location_(std::move(other.location_)),
+          description_(std::move(other.description_)) {}
 
     bool is_profile_background_tile() const { return profile_background_tile_; }
     bool is_translator() const { return is_translator_; }
@@ -378,7 +382,6 @@ class user {
     bool geo_enabled() const { return geo_enabled_; }
     bool verified() const { return verified_; }
     bool default_profile_image() const { return default_profile_image_; }
-    bool show_all_inline_media() const { return show_all_inline_media_; }
     language lang() const { return lang_; }
     const date_time &created_at() const { return created_at_; }
     std::uint32_t favourites_count() const { return favourites_count_; }
@@ -435,6 +438,7 @@ class user {
 
     // bool following_;     // deprecated
     // bool notifications_; // deprecated
+    // bool show_all_inline_media_; // deprecated
     bool profile_background_tile_;
     bool is_translator_;
     bool default_profile_;
@@ -444,7 +448,6 @@ class user {
     bool geo_enabled_;
     bool verified_;
     bool default_profile_image_;
-    bool show_all_inline_media_;
     language lang_;
     std::uint32_t favourites_count_;
     std::uint32_t listed_count_;
@@ -453,11 +456,12 @@ class user {
     std::uint32_t friends_count_;
     std::uint64_t id_;
     date_time created_at_;
+    string_t id_str_;
     string_t name_;
+    string_t screen_name_;
     string_t profile_sidebar_fill_color_;
     string_t profile_sidebar_border_color_;
     string_t profile_image_url_;
-    string_t id_str_;
     string_t profile_link_color_;
     string_t url_;
     string_t profile_image_url_https_;
@@ -465,7 +469,6 @@ class user {
     string_t profile_background_image_url_https_;
     string_t profile_background_color_;
     string_t profile_background_image_url_;
-    string_t screen_name_;
     std::experimental::optional<bool> follow_request_sent_; // nullable
     std::experimental::optional<std::int32_t> utc_offset_;  // nullable
     std::experimental::optional<string_t> location_;        // nullable

@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    const auto users = client->get_users_lookup(std::vector<twitter::string_t>{
-        u("ohmyarch"), u("kassol_zx"), u("twitterapi")});
+    const auto users = client->get_users_lookup(
+        std::vector<twitter::string_t>{u("ohmyarch"), u("kassol_zx")});
     if (users.empty()) {
         std::cout << "Failed." << std::endl;
 
@@ -71,8 +71,16 @@ int main(int argc, char *argv[])
     std::size_t size = users.size();
 
     for (const auto &e : users) {
-        ucout << u("name: ") << e.name() << std::endl
-              << u("profile_image_url_https: ") << e.profile_image_url_https() << std::endl;
+        ucout << u("id: ") << e.id() << std::endl
+              << u("id_str: ") << e.id_str() << std::endl
+              << u("name: ") << e.name() << std::endl
+              << u("screen_name: ") << e.screen_name() << std::endl
+              << u("location: ") << e.location().value_or(u("null"))
+              << std::endl
+              << u("description: ") << e.description().value_or(u("null"))
+              << std::endl
+              << u("profile_image_url_https: ") << e.profile_image_url_https()
+              << std::endl;
 
         if (++index < size)
             std::cout << std::endl;

@@ -375,7 +375,7 @@ twitter_client::get_account_settings() const {
         settings.allow_dm_groups_from_ =
             string_to_allowed(root.at(u("allow_dm_groups_from")).as_string());
 
-        return settings;
+        return std::move(settings);
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
@@ -419,7 +419,10 @@ std::vector<user> twitter_client::get_users_lookup(
                 object.at(u("profile_sidebar_border_color")).as_string();
             user.profile_image_url_ =
                 object.at(u("profile_image_url")).as_string();
-            user.location_ = object.at(u("location")).as_string();
+
+            const string_t &location = object.at(u("location")).as_string();
+            if (!location.empty())
+                user.location_ = location;
 
             std::vector<string_t> created_at(6);
             boost::split(created_at, object.at(u("created_at")).as_string(),
@@ -578,20 +581,21 @@ std::vector<user> twitter_client::get_users_lookup(
                 object.at(u("followers_count")).as_number().to_uint64();
             user.protected_ = object.at(u("protected")).as_bool();
             user.profile_background_image_url_https_ =
-                object.at(u("profile_background_image_url_https")).as_bool();
+                object.at(u("profile_background_image_url_https")).as_string();
             user.geo_enabled_ = object.at(u("geo_enabled")).as_bool();
 
-            const web::json::value &description = object.at(u("description"));
-            if (!description.is_null())
-                user.description_ = description.as_string();
+            const string_t &description =
+                object.at(u("description")).as_string();
+            if (!description.empty())
+                user.description_ = description;
 
             user.profile_background_color_ =
                 object.at(u("profile_background_color")).as_string();
             user.verified_ = object.at(u("verified")).as_bool();
 
-            const web::json::value &time_zone = object.at(u("time_zone"));
-            if (!time_zone.is_null())
-                user.time_zone_ = time_zone.as_string();
+            const string_t &time_zone = object.at(u("time_zone")).as_string();
+            if (!time_zone.empty())
+                user.time_zone_ = time_zone;
 
             user.statuses_count_ =
                 object.at(u("statuses_count")).as_number().to_uint32();
@@ -602,8 +606,6 @@ std::vector<user> twitter_client::get_users_lookup(
             user.friends_count_ =
                 object.at(u("friends_count")).as_number().to_uint32();
             user.screen_name_ = object.at(u("screen_name")).as_string();
-            user.show_all_inline_media_ =
-                object.at(u("show_all_inline_media")).as_bool();
 
             if (object.has_field(u("status"))) {
                 const web::json::value &status = object.at(u("status"));
@@ -818,7 +820,7 @@ twitter_client::get_help_configuration() const {
         for (const auto &e : non_username_paths)
             config.non_username_paths_.emplace_back(e.as_string());
 
-        return config;
+        return std::move(config);
     } catch (const web::http::http_exception &e) {
         std::cout << "Error: " << e.what() << std::endl;
     } catch (const web::json::json_exception &e) {
