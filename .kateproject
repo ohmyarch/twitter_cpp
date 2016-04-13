@@ -1,5 +1,4 @@
 {
-      "name": "twitter_cpp"
-    
-    , "files": [ { "git": 1 } ]
+  "name": "twitter_cpp",
+  "files": [ { "git": 1 } ]
 }
