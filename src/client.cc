@@ -607,11 +607,15 @@ std::vector<user> twitter_client::get_users_lookup(
             user.screen_name_ = object.at(u("screen_name")).as_string();
 
             if (object.has_field(u("status"))) {
-                const web::json::value &status = object.at(u("status"));
-                if (!status.is_null()) {
-                    const web::json::object &status_object = status.as_object();
+                const web::json::value &status_node = object.at(u("status"));
+                if (!status_node.is_null()) {
+                    const web::json::object &status_object =
+                        status_node.as_object();
                     if (!status_object.empty()) {
-                        ;
+                        status status;
+                        status.text_ = status_object.at(u("text")).as_string();
+
+                        user.status_ = std::move(status);
                     }
                 }
             }
@@ -902,3 +906,5 @@ string_t twitter_client::get_help_tos() const {
     return {};
 }
 }
+
+

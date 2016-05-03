@@ -153,8 +153,9 @@ class language_info {
     language_info(const string_t &code, const string_t &name,
                   const string_t &status)
         : code_(code), name_(name), status_(status) {}
-    language_info(language_info &&other)
-        : code_(std::move(other.code_)), name_(std::move(other.name_)),
+    language_info(language_info &&other) noexcept
+        : code_(std::move(other.code_)),
+          name_(std::move(other.name_)),
           status_(std::move(other.status_)) {}
 
     const string_t &code() const { return code_; }
@@ -330,6 +331,29 @@ class account_settings {
     // bool protected_changed_;
 };
 
+class status {
+  public:
+    status(status &&other) noexcept : text_(std::move(other.text_)) {}
+
+    const string_t &text() const { return text_; }
+
+    status &operator=(status &&other) noexcept {
+        if (&other != this) {
+            text_ = std::move(other.text_);
+        }
+
+        return *this;
+    }
+
+  private:
+    friend class user;
+    friend class twitter_client;
+
+    status() {}
+
+    string_t text_;
+};
+
 class date_time {
   public:
     std::uint16_t year() const { return year_; }
@@ -363,13 +387,15 @@ class date_time {
 
 class user {
   public:
-    user(user &&other)
-        : id_(other.id_), id_str_(std::move(other.id_str_)),
+    user(user &&other) noexcept
+        : id_(other.id_),
+          id_str_(std::move(other.id_str_)),
           name_(std::move(other.name_)),
           screen_name_(std::move(other.screen_name_)),
           profile_image_url_https_(std::move(other.profile_image_url_https_)),
           location_(std::move(other.location_)),
-          description_(std::move(other.description_)) {}
+          description_(std::move(other.description_)),
+          status_(std::move(other.status_)) {}
 
     bool is_profile_background_tile() const { return profile_background_tile_; }
     bool is_translator() const { return is_translator_; }
@@ -421,6 +447,9 @@ class user {
     const std::experimental::optional<std::int32_t> &utc_offset() const {
         return utc_offset_;
     }
+    const std::experimental::optional<class status> &status() const {
+        return status_;
+    }
     const std::experimental::optional<string_t> &location() const {
         return location_;
     }
@@ -471,6 +500,7 @@ class user {
     string_t profile_background_image_url_;
     std::experimental::optional<bool> follow_request_sent_; // nullable
     std::experimental::optional<std::int32_t> utc_offset_;  // nullable
+    std::experimental::optional<class status> status_;      // nullable
     std::experimental::optional<string_t> location_;        // nullable
     std::experimental::optional<string_t> time_zone_;       // nullable
     std::experimental::optional<string_t> description_;     // nullable
@@ -481,8 +511,9 @@ class suggested_category {
     suggested_category(const string_t &name, const string_t &slug,
                        const std::uint16_t size)
         : size_(size), name_(name), slug_(slug) {}
-    suggested_category(suggested_category &&other)
-        : size_(other.size_), name_(std::move(other.name_)),
+    suggested_category(suggested_category &&other) noexcept
+        : size_(other.size_),
+          name_(std::move(other.name_)),
           slug_(std::move(other.slug_)) {}
 
     string_t name() const { return name_; }
